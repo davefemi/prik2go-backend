@@ -1,12 +1,15 @@
 package nl.davefemi.prik2go.service;
 
 import nl.davefemi.prik2go.data.dto.UserAccountDTO;
+import nl.davefemi.prik2go.data.dto.SessionResponseDTO;
 
 public interface AuthServiceInterface {
 
-    String createUser(UserAccountDTO credentials);
+    SessionResponseDTO createUser(UserAccountDTO credentials);
 
-    String validateUser(UserAccountDTO credentials);
+    SessionResponseDTO validateUser(UserAccountDTO credentials) throws IllegalAccessException, IllegalArgumentException;
 
-    String createSession(UserAccountDTO credentials);
+    SessionResponseDTO createSession(UserAccountDTO credentials);
+
+    void validateSession(String user);
 }

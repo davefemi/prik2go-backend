@@ -7,8 +7,10 @@ import lombok.RequiredArgsConstructor;
 import nl.davefemi.prik2go.authorization.PasswordManager;
 import nl.davefemi.prik2go.authorization.SessionFactory;
 import nl.davefemi.prik2go.data.dto.UserAccountDTO;
+import nl.davefemi.prik2go.data.dto.SessionResponseDTO;
 import nl.davefemi.prik2go.data.dto.UserSessionDTO;
 import nl.davefemi.prik2go.data.entity.UserAccountEntity;
+import nl.davefemi.prik2go.data.entity.UserSessionEntity;
 import nl.davefemi.prik2go.data.mapper.UserAccountMapper;
 import nl.davefemi.prik2go.data.mapper.UserSessionMapper;
 import nl.davefemi.prik2go.data.repository.UserAccountRepository;
@@ -34,7 +36,7 @@ public class AuthService implements AuthServiceInterface{
 
     @Transactional
     @Override
-    public String createUser(UserAccountDTO credentials) {
+    public SessionResponseDTO createUser(UserAccountDTO credentials) {
         if (!userAccountRepository.existsByEmail(credentials.getEmail())){
             credentials.setPassword(passwordManager.hashPassword(credentials.getPassword()));
             UserAccountEntity entity = userAccountRepository.save(userAccountMapper.mapToEntity(credentials));
@@ -45,28 +47,36 @@ public class AuthService implements AuthServiceInterface{
     }
 
     @Override
-    public String validateUser(UserAccountDTO credentials) {
+    public SessionResponseDTO validateUser(UserAccountDTO credentials) throws IllegalAccessException, IllegalArgumentException {
         UserAccountDTO user = retrieveUser(credentials.getEmail());
         if (passwordManager.match(credentials.getPassword(), user.getPassword())){
             return createSession(user);
         }
-        return null;
+        throw new IllegalAccessException("Authenthication failed");
     }
 
     @Transactional
     @Override
-    public String createSession(UserAccountDTO user) {
+    public SessionResponseDTO createSession(UserAccountDTO user) {
         UserSessionDTO session = sessionFactory.generateSession(user);
-        userSessionRepository.save(userSessionMapper.mapToEntity(session, userAccountRepository.getReferenceById(user.getId())));
-        return session.getToken();
+        UserSessionEntity entity = userSessionRepository.save(userSessionMapper.mapToEntity(session, userAccountRepository.getReferenceById(user.getId())));
+        return userSessionMapper.mapToResponseDTO(entity);
     }
 
+    @Override
+    public void validateSession(String user){
 
-    private String retrieveSession(){
-        return "";
     }
 
-    private UserAccountDTO retrieveUser(String email){
-        return userAccountMapper.mapToDTO(userAccountRepository.findByEmail(email));
+    private UserAccountDTO retrieveUser(String email) throws IllegalArgumentException{
+        try {
+            return userAccountMapper.mapToDTO(userAccountRepository.findByEmail(email));
+        } catch (Exception e) {
+            throw new IllegalArgumentException("User not found");
+        }
+    }
+
+    private void recordActivity(){
+
     }
 }

@@ -1,13 +1,19 @@
 package nl.davefemi.prik2go.controller;
 
 import lombok.RequiredArgsConstructor;
+import nl.davefemi.prik2go.data.dto.UserAccountDTO;
 import nl.davefemi.prik2go.exceptions.ApplicatieException;
 import nl.davefemi.prik2go.exceptions.VestigingException;
+import nl.davefemi.prik2go.service.AuthService;
+import nl.davefemi.prik2go.service.AuthServiceInterface;
 import nl.davefemi.prik2go.service.DomainService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.logging.Logger;
 
 @RestController
@@ -16,9 +22,11 @@ import java.util.logging.Logger;
 public class ApiController {
     private static final Logger logger = Logger.getLogger(ApiController.class.getName());
     private final DomainService domainService;
+    private final AuthServiceInterface authService;
 
-    @GetMapping("/get-branches")
-    public ResponseEntity<?> getBranches(){
+    @PostMapping("/get-branches")
+    public ResponseEntity<?> getBranches(@RequestBody String userId){
+//        authService.validateSession(userId);
         try {
             logger.info("Branches successfully retrieved");
             return ResponseEntity.of(Optional.of(domainService.getVestigingLocaties()));
@@ -27,8 +35,9 @@ public class ApiController {
         }
     }
 
-    @GetMapping("/get-customers")
-    public ResponseEntity<?> getCustomer(@RequestParam("location") String location){
+    @PostMapping("/get-customers")
+    public ResponseEntity<?> getCustomer(@RequestParam("location") String location, @RequestBody String userId){
+        authService.validateSession(userId);
         try {
             logger.info("Custumers for [" + location + "] successfully retrieved");
             return ResponseEntity.of(Optional.of(domainService.getKlantenDTO(location)));
@@ -37,8 +46,9 @@ public class ApiController {
         }
     }
 
-    @GetMapping("/get-status")
-    public ResponseEntity<?> getBranchStatus(@RequestParam("location") String location){
+    @PostMapping("/get-status")
+    public ResponseEntity<?> getBranchStatus(@RequestParam("location") String location, @RequestBody String userId){
+        authService.validateSession(userId);
         try{
             logger.info("Status for [" + location + "] successfully retrieved");
             return ResponseEntity.of(Optional.of(domainService.getVestigingStatus(location)));
@@ -47,7 +57,8 @@ public class ApiController {
     }
 
     @PutMapping("/change-status")
-    public ResponseEntity<?> changeBranchStatus(@RequestParam("location") String location) {
+    public ResponseEntity<?> changeBranchStatus(@RequestParam("location") String location, @RequestBody String userId) {
+        authService.validateSession(userId);
         try {
             domainService.veranderVestigingStatus(location);
             logger.info("Status for [" + location + "] set to " + domainService.getVestigingStatus(location));
