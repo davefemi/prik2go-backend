@@ -1,8 +1,8 @@
 package nl.davefemi.prik2go.controller;
 
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import nl.davefemi.prik2go.data.dto.UserAccountDTO;
+import nl.davefemi.prik2go.data.dto.SessionResponseDTO;
 import nl.davefemi.prik2go.service.AuthServiceInterface;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
@@ -21,7 +21,7 @@ public class AuthController {
 
     @PostMapping("/create-user")
     public ResponseEntity<?> createUser(@RequestBody UserAccountDTO credentials){
-        String token = service.createUser(credentials);
+        SessionResponseDTO token = service.createUser(credentials);
         return ResponseEntity.ok(token);
     }
 
@@ -32,7 +32,7 @@ public class AuthController {
             logger.info("Login successful for [" +credentials.getEmail() +"]");
             return response;
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Auth failed");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
         }
     }
 }
