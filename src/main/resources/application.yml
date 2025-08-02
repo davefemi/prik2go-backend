@@ -1,0 +1,27 @@
+server:
+  port: 8080
+spring:
+  datasource:
+    url: ${SUPABASE_URL}
+    username: ${SUPABASE_USER}
+    password: ${SUPABASE_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+  hikari:
+    data-source-properties:
+      prepareThreshold: 0
+  profiles:
+    active: default
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: true
+    properties:
+      hibernate:
+      format_sql: false
+  firebase:
+    url: ${FIREBASE_URL}
+    username: ${FIREBASE_USER}
+    password: ${FIREBASE_PASSWORD}
+    driver-class-name: org.firebirdsql.jdbc.FBDriver
+  jwt:
+    key: ${JWT_KEY}
