@@ -28,9 +28,9 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<?> loginUser(@RequestBody UserAccountDTO credentials) {
         try{
-            ResponseEntity<?> response = ResponseEntity.ok(service.validateUser(credentials));
-            logger.info("Login successful for [" +credentials.getEmail() +"]");
-            return response;
+            SessionResponseDTO dto = service.validateUser(credentials);
+            logger.info("Login successful for [" + dto.getUser() +"]");
+            return ResponseEntity.ok(dto);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
         }
