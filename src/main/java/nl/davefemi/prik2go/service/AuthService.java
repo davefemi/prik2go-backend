@@ -2,6 +2,7 @@ package nl.davefemi.prik2go.service;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import nl.davefemi.prik2go.authorization.PasswordManager;
 import nl.davefemi.prik2go.authorization.SessionFactory;
@@ -30,6 +31,7 @@ public class AuthService implements AuthServiceInterface{
     private final EntityManager manager;
     private final PasswordManager passwordManager;
 
+    @Transactional
     @Override
     public SessionResponseDTO createUser(UserAccountDTO credentials) {
         if (!userAccountRepository.existsByEmail(credentials.getEmail())){
