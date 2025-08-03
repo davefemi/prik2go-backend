@@ -3,6 +3,7 @@ package nl.davefemi.prik2go.data.repository;
 import lombok.RequiredArgsConstructor;
 import nl.davefemi.prik2go.exceptions.ApplicatieException;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
 import java.sql.Connection;
@@ -15,16 +16,17 @@ import java.util.logging.Logger;
  */
 @Component
 @RequiredArgsConstructor
-public class DBConnection {      
+@ConfigurationProperties(prefix = "external.firebase")
+public class DBConnection {
         private static final Logger logger = Logger.getLogger(DBConnection.class.getName());
-        @Value("${spring.firebase.url}")
-        private String DATABASE_URL;
-        @Value("${spring.firebase.driver-class-name}")
-        private String DRIVERNAME;
-        @Value("${spring.firebase.username}")
-        private String DATABASE_USER;
-        @Value("${spring.firebase.password}")
-        private String DATABASE_PASSWORD;
+        @Value("${external.firebase.url}")
+        private String database_url;
+        @Value("${external.firebase.driver}")
+        private String drivername;
+        @Value("${external.firebase.username}")
+        private String database_user;
+        @Value("${external.firebase.password}")
+        private String database_password;
 
         /**
          * Methode die verbinding zoekt met de database en een Connection-object oplevert
@@ -35,9 +37,9 @@ public class DBConnection {
          */
         public Connection maakVerbinding() throws ApplicatieException {
                 try {
-                        Class.forName(DRIVERNAME);
+                        Class.forName(drivername);
                         logger.info("Maakt verbinding met database");
-                        return DriverManager.getConnection(DATABASE_URL, DATABASE_USER, DATABASE_PASSWORD);
+                        return DriverManager.getConnection(database_url, database_user, database_password);
                 }
                 catch (ClassNotFoundException e) {
                         logger.warning(e.getMessage());

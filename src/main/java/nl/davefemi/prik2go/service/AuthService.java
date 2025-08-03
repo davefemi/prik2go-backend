@@ -2,7 +2,6 @@ package nl.davefemi.prik2go.service;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import nl.davefemi.prik2go.authorization.PasswordManager;
 import nl.davefemi.prik2go.authorization.SessionFactory;
@@ -18,13 +17,10 @@ import nl.davefemi.prik2go.data.repository.UserSessionRepository;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
-import java.util.logging.Logger;
-
 @Service
 @RequiredArgsConstructor
 @Qualifier("defaultAuth")
 public class AuthService implements AuthServiceInterface{
-    private static final Logger logger = Logger.getLogger(AuthServiceInterface.class.getName());
     private final SessionFactory sessionFactory;
     private final UserAccountMapper userAccountMapper;
     private final UserAccountRepository userAccountRepository;
@@ -34,7 +30,6 @@ public class AuthService implements AuthServiceInterface{
     private final EntityManager manager;
     private final PasswordManager passwordManager;
 
-    @Transactional
     @Override
     public SessionResponseDTO createUser(UserAccountDTO credentials) {
         if (!userAccountRepository.existsByEmail(credentials.getEmail())){
@@ -52,10 +47,9 @@ public class AuthService implements AuthServiceInterface{
         if (passwordManager.match(credentials.getPassword(), user.getPassword())){
             return createSession(user);
         }
-        throw new IllegalAccessException("Authenthication failed");
+        throw new IllegalAccessException("Authentication failed");
     }
 
-    @Transactional
     @Override
     public SessionResponseDTO createSession(UserAccountDTO user) {
         UserSessionDTO session = sessionFactory.generateSession(user);
@@ -65,7 +59,6 @@ public class AuthService implements AuthServiceInterface{
 
     @Override
     public void validateSession(String user){
-
     }
 
     private UserAccountDTO retrieveUser(String email) throws IllegalArgumentException{
@@ -74,9 +67,5 @@ public class AuthService implements AuthServiceInterface{
         } catch (Exception e) {
             throw new IllegalArgumentException("User not found");
         }
-    }
-
-    private void recordActivity(){
-
     }
 }

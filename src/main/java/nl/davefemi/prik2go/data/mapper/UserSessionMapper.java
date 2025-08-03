@@ -10,7 +10,6 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 public class UserSessionMapper {
-    private final UserAccountMapper userAccountMapper;
 
     public UserSessionEntity mapToEntity(UserSessionDTO dto, UserAccountEntity user){
         UserSessionEntity entity = new UserSessionEntity();

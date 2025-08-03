@@ -10,7 +10,7 @@ import java.util.Base64;
 public class JWTKey {
     private final SecretKey key;
 
-    public JWTKey(@Value("${spring.jwt.key}") String base64Key) {
+    public JWTKey(@Value("${external.jwt.key}") String base64Key) {
         byte[] decodedKey = Base64.getDecoder().decode(base64Key);
         this.key = Keys.hmacShaKeyFor(decodedKey);
     }

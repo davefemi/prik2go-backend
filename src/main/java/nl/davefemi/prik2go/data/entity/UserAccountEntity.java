@@ -1,9 +1,7 @@
 package nl.davefemi.prik2go.data.entity;
 
 import jakarta.persistence.*;
-import lombok.Builder;
 import lombok.Data;
-import org.hibernate.annotations.ColumnDefault;
 
 import java.util.UUID;
 

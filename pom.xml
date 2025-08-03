@@ -147,12 +147,12 @@
                 <configuration>
                     <mainClass>nl.davefemi.prik2go.Prik2GoServer</mainClass>
                     <excludeDevtools>false</excludeDevtools>
-                    <excludes>
-                        <exclude>
-                            <groupId>org.projectlombok</groupId>
-                            <artifactId>lombok</artifactId>
-                        </exclude>
-                    </excludes>
+<!--                    <excludes>-->
+<!--                        <exclude>-->
+<!--                            <groupId>org.projectlombok</groupId>-->
+<!--                            <artifactId>lombok</artifactId>-->
+<!--                        </exclude>-->
+<!--                    </excludes>-->
                 </configuration>
             </plugin>
         </plugins>

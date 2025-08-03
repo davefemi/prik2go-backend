@@ -7,6 +7,7 @@ spring:
     password: ${SUPABASE_PASSWORD}
     driver-class-name: org.postgresql.Driver
   hikari:
+    maximum-pool-size: 2
     data-source-properties:
       prepareThreshold: 0
   profiles:
@@ -16,12 +17,13 @@ spring:
       ddl-auto: validate
     show-sql: true
     properties:
-      hibernate:
+      hibernate.dialect: org.hibernate.dialect.PostgreSQLDialect
       format_sql: false
+external:
   firebase:
     url: ${FIREBASE_URL}
     username: ${FIREBASE_USER}
     password: ${FIREBASE_PASSWORD}
-    driver-class-name: org.firebirdsql.jdbc.FBDriver
+    driver: org.firebirdsql.jdbc.FBDriver
   jwt:
     key: ${JWT_KEY}
