@@ -53,6 +53,7 @@ public class AuthService implements AuthServiceInterface{
     @Override
     public SessionResponseDTO createSession(UserAccountDTO user) {
         UserSessionDTO session = sessionFactory.generateSession(user);
+        userSessionRepository.deleteByUUID(user.getUser());
         UserSessionEntity entity = userSessionRepository.save(userSessionMapper.mapToEntity(session, userAccountRepository.getReferenceById(user.getId())));
         return userSessionMapper.mapToResponseDTO(entity);
     }
