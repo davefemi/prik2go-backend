@@ -7,7 +7,6 @@ import lombok.RequiredArgsConstructor;
 import nl.davefemi.prik2go.data.dto.UserAccountDTO;
 import nl.davefemi.prik2go.data.dto.UserSessionDTO;
 import org.springframework.stereotype.Component;
-
 import java.util.Date;
 import java.util.UUID;
 

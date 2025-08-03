@@ -11,6 +11,7 @@ public class UserAccountMapper {
 
     public UserAccountEntity mapToEntity(UserAccountDTO dto) {
         UserAccountEntity entity = new UserAccountEntity();
+        entity.setId(dto.getId());
         entity.setName(dto.getName());
         entity.setEmail(dto.getEmail());
         entity.setRole(dto.getRole());
