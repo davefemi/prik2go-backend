@@ -3,6 +3,7 @@ package nl.davefemi.prik2go.controller;
 import lombok.RequiredArgsConstructor;
 import nl.davefemi.prik2go.data.dto.UserAccountDTO;
 import nl.davefemi.prik2go.exceptions.ApplicatieException;
+import nl.davefemi.prik2go.exceptions.AuthorizationException;
 import nl.davefemi.prik2go.exceptions.VestigingException;
 import nl.davefemi.prik2go.service.AuthService;
 import nl.davefemi.prik2go.service.AuthServiceInterface;
@@ -41,7 +42,7 @@ public class ApiController {
         try {
             logger.info("Custumers for [" + location + "] successfully retrieved");
             return ResponseEntity.of(Optional.of(domainService.getKlantenDTO(location)));
-        } catch (ApplicatieException e) {
+        } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }

@@ -27,7 +27,7 @@ public class JWTAuthFilter extends OncePerRequestFilter {
                                     FilterChain filterChain) throws ServletException, IOException {
         String header = request.getHeader("Authorization");
         if (header != null && header.startsWith("Bearer")){
-            String token = header.substring(7);
+                String token = header.substring(7);
             Claims claims = sessionFactory.parseToken(token);
             String user = claims.getSubject();
             String role = claims.get("ROLE", String.class);
