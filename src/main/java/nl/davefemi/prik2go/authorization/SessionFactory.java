@@ -20,7 +20,7 @@ public class SessionFactory {
                 .setId(UUID.randomUUID().toString())
                 .claim("ROLE", user.getRole())
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis()+300000))
+                .setExpiration(new Date(System.currentTimeMillis()+40000))
                 .signWith(jwtKey.getKey(), SignatureAlgorithm.HS256)
                 .compact();
         return createSession(user, token);

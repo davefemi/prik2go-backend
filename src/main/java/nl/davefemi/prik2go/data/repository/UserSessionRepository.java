@@ -15,6 +15,6 @@ public interface UserSessionRepository extends JpaRepository<UserSessionEntity, 
 
     @Modifying
     @Transactional
-    @Query("DELETE FROM UserSessionEntity u WHERE u.userId.user = :userId")
-    void deleteByUUID(@Param("userId") UUID userId);
+    @Query("DELETE FROM UserSessionEntity u WHERE u.useraccount.userid = :userid")
+    void deleteByUUID(@Param("userid") UUID userId);
 }
