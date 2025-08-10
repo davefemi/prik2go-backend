@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="RemoteTargetsManager">
+    <targets>
+      <target name="backend" type="docker-compose" uuid="f57f2f47-1da9-4fe2-862b-5da274cb64f0">
+        <config>
+          <option name="targetPlatform">
+            <TargetPlatform />
+          </option>
+          <option name="configurationFiles">
+            <list>
+              <option value="$PROJECT_DIR$/docker-compose.yml" />
+            </list>
+          </option>
+          <option name="envs">
+            <map>
+              <entry key="JWT_KEY" value="uvWvMRupekQToHs4oTbg/IKd0DrVVnRq4ko+wy8gcwXtnRISJubDee4zaI7D2ccMtBfO8phid/9fzj1XU1J2YQ==" />
+              <entry key="POSTGRES_DB" value="prik2go" />
+              <entry key="POSTGRES_PASSWORD" value="ngX9qh2jap7sBiIZ8gAk3Q" />
+              <entry key="POSTGRES_USER" value="postgres" />
+            </map>
+          </option>
+          <option name="serviceName" value="backend" />
+        </config>
+        <ContributedStateBase type="JavaLanguageRuntime">
+          <config>
+            <option name="homePath" value="/usr/local/openjdk-21" />
+            <option name="javaVersionString" value="21" />
+          </config>
+        </ContributedStateBase>
+      </target>
+      <target name="db" type="docker-compose" uuid="5f347614-578e-47c7-95d5-b73bb040f6a2">
+        <config>
+          <option name="targetPlatform">
+            <TargetPlatform />
+          </option>
+          <option name="configurationFiles">
+            <list>
+              <option value="$PROJECT_DIR$/docker-compose.yml" />
+            </list>
+          </option>
+          <option name="envs">
+            <map>
+              <entry key="JWT_KEY" value="uvWvMRupekQToHs4oTbg/IKd0DrVVnRq4ko+wy8gcwXtnRISJubDee4zaI7D2ccMtBfO8phid/9fzj1XU1J2YQ==" />
+              <entry key="POSTGRES_DB" value="prik2go" />
+              <entry key="POSTGRES_PASSWORD" value="ngX9qh2jap7sBiIZ8gAk3Q" />
+              <entry key="POSTGRES_USER" value="postgres" />
+            </map>
+          </option>
+          <option name="serviceName" value="db" />
+        </config>
+        <ContributedStateBase type="JavaLanguageRuntime">
+          <config />
+        </ContributedStateBase>
+      </target>
+    </targets>
+  </component>
+</project>

@@ -41,7 +41,7 @@ public class DatabaseMapper {
                                                                 "JOIN Postcodeinfo VP ON V.postcode = VP.postcode " +
                                                 "WHERE           BZ.klant = B.klant " +
                                                 "ORDER BY        SQRT(POWER(KP.lat-VP.lat,2) + POWER(KP.lng-VP.lng,2)) ASC " +
-                                                "ROWS            1)";     
+                                                "LIMIT            1)";
         private static final String SQL_DICHTSTBIJZIJNDEVESTIGINGEN =
                         "SELECT          V.plaats " +
                         "FROM            Klant K " +

@@ -22,7 +22,7 @@ public class UserAccountMapper {
     public UserAccountDTO mapToDTO(UserAccountEntity entity) {
         UserAccountDTO dto = new UserAccountDTO();
         dto.setId(entity.getId());
-        dto.setUser(entity.getUser());
+        dto.setUser(entity.getUserid());
         dto.setEmail(entity.getEmail());
         dto.setName(entity.getName());
         dto.setRole(entity.getRole());

@@ -14,11 +14,12 @@ public class UserAccountEntity {
     private Long id;
 
     @Column(
-            name = "user", columnDefinition = "uuid DEFAULT uuid_generate_v1()",
+            name = "userid", columnDefinition = "uuid DEFAULT uuid_generate_v1()",
             insertable = false,
             updatable = false,
-            nullable = false
-    )    private UUID user;
+            nullable = false,
+            unique = true
+    )    private UUID userid;
 
     @Column(name = "name")
     private String name;

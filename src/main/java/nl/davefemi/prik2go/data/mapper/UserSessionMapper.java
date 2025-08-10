@@ -13,7 +13,7 @@ public class UserSessionMapper {
 
     public UserSessionEntity mapToEntity(UserSessionDTO dto, UserAccountEntity user){
         UserSessionEntity entity = new UserSessionEntity();
-        entity.setUserId(user);
+        entity.setUseraccount(user);
         entity.setToken(dto.getToken());
         entity.setIssuedAt(dto.getIssuedAt());
         entity.setExpiresAt(dto.getExpiresAt());
@@ -23,7 +23,7 @@ public class UserSessionMapper {
 
     public SessionResponseDTO mapToResponseDTO(UserSessionEntity entity) {
         SessionResponseDTO dto = new SessionResponseDTO();
-        dto.setUser(entity.getUserId().getUser());
+        dto.setUser(entity.getUseraccount().getUserid());
         dto.setToken(entity.getToken());
         dto.setExpiresAt(entity.getExpiresAt());
         return dto;

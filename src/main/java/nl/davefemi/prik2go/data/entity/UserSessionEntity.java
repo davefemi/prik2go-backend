@@ -15,8 +15,8 @@ public class UserSessionEntity {
     private Long id;
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", referencedColumnName = "user")
-    private UserAccountEntity userId;
+    @JoinColumn(name = "useraccount", referencedColumnName = "userid")
+    private UserAccountEntity useraccount;
 
     @Column(name = "token")
     private String token;
