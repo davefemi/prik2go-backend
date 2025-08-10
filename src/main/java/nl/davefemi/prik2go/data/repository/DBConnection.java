@@ -19,13 +19,13 @@ import java.util.logging.Logger;
 @ConfigurationProperties(prefix = "external.firebase")
 public class DBConnection {
         private static final Logger logger = Logger.getLogger(DBConnection.class.getName());
-        @Value("${external.firebase.url}")
+        @Value("${spring.datasource.url}")
         private String database_url;
-        @Value("${external.firebase.driver}")
+        @Value("${spring.datasource.driver-class-name}")
         private String drivername;
-        @Value("${external.firebase.username}")
+        @Value("${spring.datasource.username}")
         private String database_user;
-        @Value("${external.firebase.password}")
+        @Value("${spring.datasource.password}")
         private String database_password;
 
         /**
