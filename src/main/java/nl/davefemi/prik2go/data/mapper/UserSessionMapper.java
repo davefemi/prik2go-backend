@@ -25,6 +25,7 @@ public class UserSessionMapper {
         SessionResponseDTO dto = new SessionResponseDTO();
         dto.setUser(entity.getUseraccount().getUserid());
         dto.setToken(entity.getToken());
+        dto.setTokenId(entity.getTokenId());
         dto.setExpiresAt(entity.getExpiresAt());
         return dto;
     }

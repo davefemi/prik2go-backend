@@ -17,4 +17,11 @@ public interface UserSessionRepository extends JpaRepository<UserSessionEntity, 
     @Transactional
     @Query("DELETE FROM UserSessionEntity u WHERE u.useraccount.userid = :userid")
     void deleteByUUID(@Param("userid") UUID userId);
+
+    @Transactional
+    @Query("SELECT count(*)>0 " +
+            "FROM UserSessionEntity  u " +
+            "WHERE u.tokenId = :token_id " +
+            "and u.useraccount.userid = :userid")
+    boolean existsByTokenId(@Param("token_id") UUID tokenId, @Param("userid") UUID userAccount);
 }

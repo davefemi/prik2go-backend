@@ -45,7 +45,4 @@ public class SessionFactory {
         return session;
     }
 
-    public boolean validateSession(UserSessionDTO session){
-        return true;
-    }
 }
