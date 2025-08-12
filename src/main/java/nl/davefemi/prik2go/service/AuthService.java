@@ -15,8 +15,11 @@ import nl.davefemi.prik2go.data.mapper.UserAccountMapper;
 import nl.davefemi.prik2go.data.mapper.UserSessionMapper;
 import nl.davefemi.prik2go.data.repository.UserAccountRepository;
 import nl.davefemi.prik2go.data.repository.UserSessionRepository;
+import nl.davefemi.prik2go.exceptions.ApplicatieException;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -44,6 +47,23 @@ public class AuthService implements AuthServiceInterface{
     }
 
     @Override
+    public SessionResponseDTO changePassword(UserAccountDTO credentials) throws ApplicatieException, IllegalArgumentException {
+        UserAccountEntity entity = userAccountRepository.findByUserid(credentials.getUser());
+        if (entity != null) {
+            if (!passwordManager.match(credentials.getPassword(), entity.getPassword())){
+                throw new IllegalArgumentException("Password is incorrect");
+            }
+            if(passwordManager.match(credentials.getNewPassword(), entity.getPassword())){
+                throw new IllegalArgumentException("New password cannot be identical to old");
+            }
+                entity.setPassword(passwordManager.hashPassword(credentials.getNewPassword()));
+                userAccountRepository.save(entity);
+                return createSession(userAccountMapper.mapToDTO(entity));
+        }
+        throw new ApplicatieException("Unable to change password");
+    }
+
+    @Override
     public SessionResponseDTO validateUser(UserAccountDTO credentials) throws IllegalAccessException, IllegalArgumentException {
         UserAccountDTO user = retrieveUser(credentials.getEmail());
         if (passwordManager.match(credentials.getPassword(), user.getPassword())){
@@ -61,7 +81,19 @@ public class AuthService implements AuthServiceInterface{
     }
 
     @Override
-    public void validateSession(String user){
+    public boolean validateSession(UUID user, UUID tokenId){
+        if(userSessionRepository.existsByTokenId(user, tokenId)) {
+            return true;
+        }
+        return false;
+    }
+
+
+
+    @Override
+    public boolean endSession(SessionResponseDTO session) {
+        userSessionRepository.deleteByUUID(session.getUser());
+        return false;
     }
 
     private UserAccountDTO retrieveUser(String email) throws IllegalArgumentException{

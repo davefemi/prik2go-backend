@@ -10,5 +10,6 @@ import java.util.UUID;
 public class SessionResponseDTO {
     private UUID user;
     private String token;
+    private UUID tokenId;
     private Instant expiresAt;
 }

@@ -6,6 +6,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import nl.davefemi.prik2go.service.AuthServiceInterface;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -15,11 +16,13 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
 public class JWTAuthFilter extends OncePerRequestFilter {
     private final SessionFactory sessionFactory;
+    private final AuthServiceInterface authService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
@@ -31,6 +34,15 @@ public class JWTAuthFilter extends OncePerRequestFilter {
             Claims claims = sessionFactory.parseToken(token);
             String user = claims.getSubject();
             String role = claims.get("ROLE", String.class);
+            UUID userId =
+                    request.getHeader("user") != null
+                            ? UUID.fromString(request.getHeader("user"))
+                            : null;
+            UUID tokenId =
+                    request.getHeader("tokenId") != null
+                            ? UUID.fromString(request.getHeader("user"))
+                            : null;
+
 
             if (user != null){
                 UsernamePasswordAuthenticationToken auth =
