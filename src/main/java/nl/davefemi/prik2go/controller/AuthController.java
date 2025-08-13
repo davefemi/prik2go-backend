@@ -41,6 +41,7 @@ public class AuthController {
         SessionResponseDTO token = null;
         try {
             token = service.changePassword(credentials);
+            logger.info("Password successfully changed for [" + credentials.getUser() + "]");
             return ResponseEntity.ok(token);
         } catch (Exception e) {
             logger.warning(e.getMessage() + " for [" + credentials.getUser() +"]");
