@@ -1,20 +1,13 @@
 package nl.davefemi.prik2go.controller;
 
 import lombok.RequiredArgsConstructor;
-import nl.davefemi.prik2go.data.dto.UserAccountDTO;
-import nl.davefemi.prik2go.exceptions.ApplicatieException;
-import nl.davefemi.prik2go.exceptions.AuthorizationException;
 import nl.davefemi.prik2go.exceptions.VestigingException;
-import nl.davefemi.prik2go.service.AuthService;
 import nl.davefemi.prik2go.service.AuthServiceInterface;
 import nl.davefemi.prik2go.service.DomainService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Map;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.logging.Logger;
 
 @RestController

@@ -1,7 +1,6 @@
 package nl.davefemi.prik2go.data.repository;
 
 import jakarta.transaction.Transactional;
-import nl.davefemi.prik2go.data.dto.UserAccountDTO;
 import nl.davefemi.prik2go.data.entity.UserAccountEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

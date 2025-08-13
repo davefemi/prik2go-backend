@@ -3,7 +3,6 @@ package nl.davefemi.prik2go.controller;
 import lombok.RequiredArgsConstructor;
 import nl.davefemi.prik2go.data.dto.UserAccountDTO;
 import nl.davefemi.prik2go.data.dto.SessionResponseDTO;
-import nl.davefemi.prik2go.exceptions.ApplicatieException;
 import nl.davefemi.prik2go.service.AuthServiceInterface;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
