@@ -2,7 +2,6 @@ package nl.davefemi.prik2go.data.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
-
 import java.time.Instant;
 import java.util.UUID;
 

@@ -1,6 +1,5 @@
 package nl.davefemi.prik2go.data.dto;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
 import java.time.Instant;
