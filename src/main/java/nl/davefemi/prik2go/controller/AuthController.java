@@ -3,7 +3,6 @@ package nl.davefemi.prik2go.controller;
 import lombok.RequiredArgsConstructor;
 import nl.davefemi.prik2go.data.dto.UserAccountDTO;
 import nl.davefemi.prik2go.data.dto.SessionResponseDTO;
-import nl.davefemi.prik2go.exceptions.ApplicatieException;
 import nl.davefemi.prik2go.service.AuthServiceInterface;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
@@ -42,6 +41,7 @@ public class AuthController {
         SessionResponseDTO token = null;
         try {
             token = service.changePassword(credentials);
+            logger.info("Password successfully changed for [" + credentials.getUser() + "]");
             return ResponseEntity.ok(token);
         } catch (Exception e) {
             logger.warning(e.getMessage() + " for [" + credentials.getUser() +"]");
