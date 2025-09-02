@@ -43,7 +43,7 @@ public class OAuth2Service {
     @Transactional
     public void validateOidcUser(OidcUser user, String userId, String requestId) throws AuthorizationException, TimeoutException {
         OAuthUserAccountEntity entity = oAuthUserAccountRepository.findOAuthUserAccountEntityByEmail(user.getEmail());
-        if (entity != null) {
+        if (entity != null && requestId != null) {
             try {
                 OAuthRequestEntity requestEntity = oAuthRequestRepository.findById(UUID.fromString(requestId)).get();
                 if (requestEntity.getExpiresAt().isBefore(Instant.now())){
@@ -58,28 +58,27 @@ public class OAuth2Service {
                 throw new AuthorizationException("Account is not linked");
             }
         }
-        else if (userId != null && entity == null){
-            linkOidcUser(user, userId, requestId);
+        else if (userId != null) {
+            if (entity == null) {
+                linkOidcUser(user, userId);
+            }
+            if (entity != null && userId.equals(entity.getUserAccount().getUserid().toString())) {
+                throw new AuthorizationException("Account is already linked");
+            }
         }
         else {
             throw new AuthorizationException("Account does not exist");
         }
-
     }
 
     @Transactional
-    public void linkOidcUser(OidcUser user, String userId, String requestId) throws AuthorizationException{
+    public void linkOidcUser(OidcUser user, String userId) throws AuthorizationException{
         try {
             OAuthUserAccountEntity entity = new OAuthUserAccountEntity();
             entity.setClient(oAuthClientRepository.getReferenceById((long) 1));
             entity.setEmail(user.getEmail());
             entity.setUserAccount(userAccountRepository.findByUserid(UUID.fromString(userId)));
             oAuthUserAccountRepository.save(entity);
-            manager.refresh(entity);
-            OAuthRequestEntity requestEntity = oAuthRequestRepository.findById(UUID.fromString(requestId)).get();
-            createSession(userAccountMapper.mapToDTO(userAccountRepository.findByUserid(UUID.fromString(userId))), requestEntity);
-            requestEntity.setAuthorized(true);
-            oAuthRequestRepository.save(requestEntity);
         }
         catch (Exception e){
             throw new AuthorizationException(e.getMessage());

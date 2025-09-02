@@ -50,14 +50,16 @@ public class SecurityConfig {
     @Bean
     @Order(2)
     public SecurityFilterChain jwtFilterChain(HttpSecurity http, JWTAuthFilter jWTAuthFilter) throws Exception {
-        http.securityMatcher("/auth/**", "/oauth2/link/google")
+        http.securityMatcher("/auth/**", "/private/oauth2/link-account/**")
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth ->
-                        auth.requestMatchers("/auth/login", "/auth/create-user").permitAll())
+                        auth.requestMatchers("/auth/login", "/auth/create-user").permitAll()
+                                .anyRequest().authenticated())
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jWTAuthFilter, UsernamePasswordAuthenticationFilter.class)
                 .formLogin(form -> form.disable())
-                .httpBasic(basic -> basic.disable());
+                .httpBasic(basic -> basic.disable())
+        ;
         return http.build();
     }
 
@@ -72,10 +74,8 @@ public class SecurityConfig {
                         authorize
                                 .requestMatchers(
                                         "/oauth2/code/google/**",
-                                        "/oauth2/authorization/**",
                                         "/oauth2/login/google",
-                                        "/oauth2/request/**",
-                                        "/oauth2/link/google")
+                                        "/oauth2/request/**")
                                 .permitAll()
                                 .anyRequest().authenticated()
                                 )
@@ -89,6 +89,7 @@ public class SecurityConfig {
                                 (String) req.getSession(false).getAttribute("userId"),
                                 (String) req.getSession(false).getAttribute("request"));
                     } catch (AuthorizationException | TimeoutException e) {
+                        System.out.println(e.getMessage());
                         result = false;
                     }
                             req.getSession(false).removeAttribute("userId");

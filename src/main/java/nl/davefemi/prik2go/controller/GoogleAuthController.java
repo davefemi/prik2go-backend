@@ -15,12 +15,11 @@ import java.util.Optional;
 import java.util.concurrent.TimeoutException;
 
 @RestController
-@RequestMapping("oauth2/")
 @RequiredArgsConstructor
 public class GoogleAuthController {
     private final OAuth2Service oAuth2Service;
 
-    @GetMapping("login/google")
+    @GetMapping("/oauth2/login/google")
     public ResponseEntity<?> loginUser(@RequestParam ("state") String requestId, HttpServletRequest req) {
         try {
             if (!oAuth2Service.validateRequest(requestId))
@@ -34,7 +33,7 @@ public class GoogleAuthController {
                 .build();
     }
 
-    @GetMapping("link/google")
+    @GetMapping("/private/oauth2/link-account/google")
     public ResponseEntity<Void> linkUser(HttpServletRequest req, Principal principal){
         req.getSession(true).setAttribute("userId", principal.getName());
         return ResponseEntity.status(HttpStatus.FOUND)
@@ -42,24 +41,24 @@ public class GoogleAuthController {
                 .build();
     }
 
-    @PostMapping("revoke")
+    @PostMapping("/oauth2/revoke")
     public ResponseEntity<?> unlinkUserAccount(){
         return ResponseEntity.status(HttpStatus.OK).body("");
     }
 
-    @GetMapping("status/google")
+    @GetMapping("/oauth2/status/google")
     public ResponseEntity<?> userLinked(@RequestParam("login") boolean result){
         return result
                 ? ResponseEntity.status(HttpStatus.OK).body("Authentication successful")
                 : ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to authenticate");
     }
 
-    @GetMapping("request/start")
+    @GetMapping("/oauth2/request/start")
     public ResponseEntity<?> getRequest(){
         return ResponseEntity.of(Optional.of(oAuth2Service.getRequestID()));
     }
 
-    @GetMapping("request/polling")
+    @GetMapping("/oauth2/request/polling")
     public ResponseEntity<?> isAuthenticated(@RequestBody RequestDTO request) {
         boolean result;
         try {
@@ -74,7 +73,7 @@ public class GoogleAuthController {
         return ResponseEntity.status(HttpStatus.OK).body(false);
     }
 
-    @GetMapping("request/get-session")
+    @GetMapping("/oauth2/request/get-session")
     public ResponseEntity<?> getSession(@RequestBody RequestDTO request) {
         try {
             return ResponseEntity.of(Optional.of(oAuth2Service.getSession(request)));
@@ -82,4 +81,13 @@ public class GoogleAuthController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
         }
     }
+
+    @GetMapping("/request/oauth2/link-account/google")
+    public ResponseEntity<Void> linkUserTest(HttpServletRequest req){
+        req.getSession(true).setAttribute("userId", "848cad6e-713d-11f0-8c9e-bea072a4b50d");
+        return ResponseEntity.status(HttpStatus.FOUND)
+                .location(URI.create("/oauth2/authorization/google"))
+                .build();
+    }
+
 }
