@@ -17,6 +17,8 @@ import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import java.util.concurrent.TimeoutException;
+
 import static org.springframework.security.config.Customizer.withDefaults;
 
 @Configuration
@@ -48,10 +50,10 @@ public class SecurityConfig {
     @Bean
     @Order(2)
     public SecurityFilterChain jwtFilterChain(HttpSecurity http, JWTAuthFilter jWTAuthFilter) throws Exception {
-        http.securityMatcher("/auth/**")
+        http.securityMatcher("/auth/**", "/oauth2/link/google")
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth ->
-                        auth.requestMatchers("/auth/login", "/auth/").permitAll())
+                        auth.requestMatchers("/auth/login", "/auth/create-user").permitAll())
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jWTAuthFilter, UsernamePasswordAuthenticationFilter.class)
                 .formLogin(form -> form.disable())
@@ -72,8 +74,8 @@ public class SecurityConfig {
                                         "/oauth2/code/google/**",
                                         "/oauth2/authorization/**",
                                         "/oauth2/login/google",
-                                        "/oauth2/link/google",
-                                        "/oauth2/device/**")
+                                        "/oauth2/request/**",
+                                        "/oauth2/link/google")
                                 .permitAll()
                                 .anyRequest().authenticated()
                                 )
@@ -81,14 +83,16 @@ public class SecurityConfig {
                         .authorizationEndpoint(a -> a.baseUri("/oauth2/authorization"))
                         .redirectionEndpoint(r -> r.baseUri("/oauth2/code/*"))
                         .successHandler((req, res, auth) -> {
-                    OidcUser user = (OidcUser) auth.getPrincipal();
                     boolean result = true;
                     try {
-                        oAuth2Service.validateOidcUser((OidcUser) auth.getPrincipal(), (String) req.getSession(false).getAttribute("userId"));
-                    } catch (AuthorizationException e) {
+                        oAuth2Service.validateOidcUser((OidcUser) auth.getPrincipal(),
+                                (String) req.getSession(false).getAttribute("userId"),
+                                (String) req.getSession(false).getAttribute("request"));
+                    } catch (AuthorizationException | TimeoutException e) {
                         result = false;
                     }
                             req.getSession(false).removeAttribute("userId");
+                    req.getSession(false).removeAttribute("request");
                     res.sendRedirect("/oauth2/status/google?login=" + result);
                 }));
         return http.build();
