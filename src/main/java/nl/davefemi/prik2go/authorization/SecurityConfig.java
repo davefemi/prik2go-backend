@@ -50,7 +50,7 @@ public class SecurityConfig {
     @Bean
     @Order(2)
     public SecurityFilterChain jwtFilterChain(HttpSecurity http, JWTAuthFilter jWTAuthFilter) throws Exception {
-        http.securityMatcher("/auth/**", "/private/oauth2/link-account/**")
+        http.securityMatcher("/auth/**", "/private/oauth2/request/**")
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth ->
                         auth.requestMatchers("/auth/login", "/auth/create-user").permitAll()

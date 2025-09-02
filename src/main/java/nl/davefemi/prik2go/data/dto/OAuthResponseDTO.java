@@ -16,11 +16,11 @@ public class OAuthResponseDTO {
     public OAuthResponseDTO(UUID requestCode,
                             String secret,
                             Long pollingInterval,
-                            Instant expiresAt){
+                            Instant expiresAt, String userId){
         this.requestCode = requestCode;
         this.secret = secret;
         this.pollingInterval = pollingInterval;
         this.expiresAt = expiresAt;
-        this.url = "http://localhost:8080/oauth2/login/google?state="+ requestCode;
+        this.url = String.format("http://localhost:8080/oauth2/login/google?state=%s&uid=%s", requestCode, userId);
     }
 }

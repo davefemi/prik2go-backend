@@ -1,6 +1,7 @@
 package nl.davefemi.prik2go.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import nl.davefemi.prik2go.data.dto.RequestDTO;
 import nl.davefemi.prik2go.exceptions.AuthorizationException;
@@ -20,25 +21,24 @@ public class GoogleAuthController {
     private final OAuth2Service oAuth2Service;
 
     @GetMapping("/oauth2/login/google")
-    public ResponseEntity<?> loginUser(@RequestParam ("state") String requestId, HttpServletRequest req) {
+    public ResponseEntity<?> loginUser(@RequestParam ("state") String requestId, @RequestParam("uid") String userId, HttpServletRequest req) {
         try {
             if (!oAuth2Service.validateRequest(requestId))
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Request denied");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
         }
-        req.getSession(true).setAttribute("request", requestId);
+        HttpSession sess = req.getSession(true);
+        sess.setAttribute("request", requestId);
+        sess.setAttribute("userId", userId);
         return ResponseEntity.status(HttpStatus.FOUND)
                 .location(URI.create("/oauth2/authorization/google"))
                 .build();
     }
 
-    @GetMapping("/private/oauth2/link-account/google")
-    public ResponseEntity<Void> linkUser(HttpServletRequest req, Principal principal){
-        req.getSession(true).setAttribute("userId", principal.getName());
-        return ResponseEntity.status(HttpStatus.FOUND)
-                .location(URI.create("/oauth2/authorization/google"))
-                .build();
+    @GetMapping("/private/oauth2/request/start")
+    public ResponseEntity<?> linkUser(HttpServletRequest req, Principal principal){
+        return ResponseEntity.of(Optional.of(oAuth2Service.getRequestID(principal.getName())));
     }
 
     @PostMapping("/oauth2/revoke")
@@ -55,7 +55,7 @@ public class GoogleAuthController {
 
     @GetMapping("/oauth2/request/start")
     public ResponseEntity<?> getRequest(){
-        return ResponseEntity.of(Optional.of(oAuth2Service.getRequestID()));
+        return ResponseEntity.of(Optional.of(oAuth2Service.getRequestID(null)));
     }
 
     @GetMapping("/oauth2/request/polling")

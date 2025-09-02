@@ -10,6 +10,7 @@ import nl.davefemi.prik2go.authorization.SessionFactory;
 import nl.davefemi.prik2go.data.dto.*;
 import nl.davefemi.prik2go.data.entity.OAuthRequestEntity;
 import nl.davefemi.prik2go.data.entity.OAuthUserAccountEntity;
+import nl.davefemi.prik2go.data.entity.UserAccountEntity;
 import nl.davefemi.prik2go.data.entity.UserSessionEntity;
 import nl.davefemi.prik2go.data.mapper.OAuthRequestMapper;
 import nl.davefemi.prik2go.data.mapper.UserAccountMapper;
@@ -42,43 +43,54 @@ public class OAuth2Service {
 
     @Transactional
     public void validateOidcUser(OidcUser user, String userId, String requestId) throws AuthorizationException, TimeoutException {
+        if (validateRequest(requestId)) {
+            if (userId == null) {
+                loginUser(user, requestId);
+            }
+            linkOidcUser(user, userId, requestId);
+        }
+    }
+
+    @Transactional
+    public void loginUser(OidcUser user, String requestId) throws AuthorizationException {
         OAuthUserAccountEntity entity = oAuthUserAccountRepository.findOAuthUserAccountEntityByEmail(user.getEmail());
-        if (entity != null && requestId != null) {
+        if (entity != null) {
             try {
                 OAuthRequestEntity requestEntity = oAuthRequestRepository.findById(UUID.fromString(requestId)).get();
-                if (requestEntity.getExpiresAt().isBefore(Instant.now())){
-                    throw new TimeoutException("Request Timeout");
-                }
                 if (!requestEntity.getAuthorized()) {
                     createSession(userAccountMapper.mapToDTO(entity.getUserAccount()), requestEntity);
                     requestEntity.setAuthorized(true);
                     oAuthRequestRepository.save(requestEntity);
                 }
             } catch (Exception e) {
-                throw new AuthorizationException("Account is not linked");
+                throw new AuthorizationException("This Google account has not been linked yet");
             }
-        }
-        else if (userId != null) {
-            if (entity == null) {
-                linkOidcUser(user, userId);
-            }
-            if (entity != null && userId.equals(entity.getUserAccount().getUserid().toString())) {
-                throw new AuthorizationException("Account is already linked");
-            }
-        }
-        else {
-            throw new AuthorizationException("Account does not exist");
         }
     }
 
+    private OAuthUserAccountEntity createOauthUserAccount(OidcUser googleUser, String userId){
+        OAuthUserAccountEntity oAuthUserAccount = new OAuthUserAccountEntity();
+        oAuthUserAccount.setClient(oAuthClientRepository.getReferenceById((long) 1));
+        oAuthUserAccount.setEmail(googleUser.getEmail());
+        oAuthUserAccount.setUserAccount(userAccountRepository.findByUserid(UUID.fromString(userId)));
+        return oAuthUserAccount;
+    }
+
     @Transactional
-    public void linkOidcUser(OidcUser user, String userId) throws AuthorizationException{
+    public void linkOidcUser(OidcUser googleUser, String userId, String requestId) throws AuthorizationException{
         try {
-            OAuthUserAccountEntity entity = new OAuthUserAccountEntity();
-            entity.setClient(oAuthClientRepository.getReferenceById((long) 1));
-            entity.setEmail(user.getEmail());
-            entity.setUserAccount(userAccountRepository.findByUserid(UUID.fromString(userId)));
-            oAuthUserAccountRepository.save(entity);
+            OAuthUserAccountEntity oAuthUserAccount = oAuthUserAccountRepository.findOAuthUserAccountEntityByEmail(googleUser.getEmail());
+            if (oAuthUserAccount != null){
+                if (oAuthUserAccount.getUserAccount().getUserid().toString().equals(userId)){
+                    oAuthRequestRepository.deleteById(UUID.fromString(requestId));
+                    throw new AuthorizationException("This Google account is already linked to this user account");
+                }
+            }
+            UserAccountEntity userAccount = userAccountRepository.findByUserid(UUID.fromString(userId));
+            if (oAuthUserAccountRepository.existsByUserAccountEntity(userAccount)){
+                throw new AuthorizationException("A Google account is already linked to this user account");
+            }
+            oAuthUserAccountRepository.save(createOauthUserAccount(googleUser, userId));
         }
         catch (Exception e){
             throw new AuthorizationException(e.getMessage());
@@ -89,7 +101,9 @@ public class OAuth2Service {
     public SessionResponseDTO createSession(UserAccountDTO user, OAuthRequestEntity request) {
         UserSessionDTO session = sessionFactory.generateSession(user);
         userSessionRepository.deleteByUUID(user.getUser());
-        UserSessionEntity entity = userSessionRepository.save(userSessionMapper.mapToEntity(session, userAccountRepository.getReferenceById(user.getId())));
+        UserSessionEntity entity = userSessionRepository.save(
+                userSessionMapper.mapToEntity(session,
+                        userAccountRepository.getReferenceById(user.getId())));
         manager.refresh(entity);
         request.setUserSession(entity);
         return userSessionMapper.mapToResponseDTO(entity);
@@ -116,11 +130,11 @@ public class OAuth2Service {
         return null;
     }
 
-    public OAuthResponseDTO getRequestID(){
+    public OAuthResponseDTO getRequestID(String userId){
         OAuthResponseDTO polling =  new OAuthResponseDTO(UUID.randomUUID(),
                 SecretGenerator.generateSecret(48),
                 2000L,
-                Instant.now().plusSeconds(300));
+                Instant.now().plusSeconds(300), userId);
         oAuthRequestRepository.save(
                 oAuthRequestMapper.mapToEntity(
                         polling,
