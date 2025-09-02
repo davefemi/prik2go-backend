@@ -82,12 +82,12 @@ public class GoogleAuthController {
         }
     }
 
-    @GetMapping("/request/oauth2/link-account/google")
-    public ResponseEntity<Void> linkUserTest(HttpServletRequest req){
-        req.getSession(true).setAttribute("userId", "848cad6e-713d-11f0-8c9e-bea072a4b50d");
-        return ResponseEntity.status(HttpStatus.FOUND)
-                .location(URI.create("/oauth2/authorization/google"))
-                .build();
-    }
+//    @GetMapping("/request/oauth2/link-account/google")
+//    public ResponseEntity<Void> linkUserTest(HttpServletRequest req){
+//        req.getSession(true).setAttribute("userId", "848cad6e-713d-11f0-8c9e-bea072a4b50d");
+//        return ResponseEntity.status(HttpStatus.FOUND)
+//                .location(URI.create("/oauth2/authorization/google"))
+//                .build();
+//    }
 
 }

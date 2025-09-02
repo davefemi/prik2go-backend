@@ -47,7 +47,9 @@ public class OAuth2Service {
             if (userId == null) {
                 loginUser(user, requestId);
             }
-            linkOidcUser(user, userId, requestId);
+            else {
+                linkOidcUser(user, userId, requestId);
+            }
         }
     }
 

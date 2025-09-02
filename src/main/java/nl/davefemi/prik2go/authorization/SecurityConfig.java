@@ -86,8 +86,12 @@ public class SecurityConfig {
                     boolean result = true;
                     try {
                         oAuth2Service.validateOidcUser((OidcUser) auth.getPrincipal(),
-                                (String) req.getSession(false).getAttribute("userId"),
-                                (String) req.getSession(false).getAttribute("request"));
+                                req.getSession(false).getAttribute("userId").equals("null")
+                                        ? null
+                                : (String) req.getSession(false).getAttribute("userId"),
+                                req.getSession(false).getAttribute("request").equals("null")
+                                        ? null
+                                : (String) req.getSession(false).getAttribute("request"));
                     } catch (AuthorizationException | TimeoutException e) {
                         System.out.println(e.getMessage());
                         result = false;
