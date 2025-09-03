@@ -25,7 +25,4 @@ public class OAuthRequestEntity {
 
     @Column(name = "user_authorized")
     private Boolean authorized;
-
-    @Column(name = "auth_failure")
-    private Boolean authFailure;
 }
