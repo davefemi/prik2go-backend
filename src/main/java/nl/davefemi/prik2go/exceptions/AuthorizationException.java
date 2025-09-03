@@ -1,6 +1,6 @@
 package nl.davefemi.prik2go.exceptions;
 
-public class AuthorizationException extends RuntimeException {
+public class AuthorizationException extends Exception {
     public AuthorizationException(){
         super();
     }
