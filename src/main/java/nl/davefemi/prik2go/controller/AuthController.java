@@ -19,13 +19,13 @@ public class AuthController {
     @Qualifier("defaultAuth")
     private final AuthServiceInterface service;
 
-    @PostMapping("public/create-user")
+    @PostMapping("create-user")
     public ResponseEntity<?> createUser(@RequestBody UserAccountDTO credentials){
         SessionResponseDTO token = service.createUser(credentials);
         return ResponseEntity.ok(token);
     }
 
-    @PostMapping("public/login")
+    @PostMapping("login")
     public ResponseEntity<?> loginUser(@RequestBody UserAccountDTO credentials) {
         try{
             SessionResponseDTO dto = service.validateUser(credentials);
@@ -36,7 +36,7 @@ public class AuthController {
         }
     }
 
-    @PostMapping("private/change-password")
+    @PostMapping("change-password")
     public ResponseEntity<?> changePassword(@RequestBody UserAccountDTO credentials){
         SessionResponseDTO token = null;
         try {
@@ -49,7 +49,7 @@ public class AuthController {
         }
     }
 
-    @PostMapping("private/logout")
+    @PostMapping("logout")
     public ResponseEntity<?> logoutUser(@RequestBody SessionResponseDTO session) {
         try{
             return ResponseEntity.ok(service.endSession(session));
