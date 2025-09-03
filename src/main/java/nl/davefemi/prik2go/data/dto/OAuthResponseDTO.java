@@ -21,6 +21,6 @@ public class OAuthResponseDTO {
         this.secret = secret;
         this.pollingInterval = pollingInterval;
         this.expiresAt = expiresAt;
-        this.url = String.format("http://localhost:8080/oauth2/login/google?state=%s&uid=%s", requestCode, userId);
+        this.url = String.format("https://prik2go-backend.onrender.com/oauth2/login/google?state=%s&uid=%s", requestCode, userId);
     }
 }
