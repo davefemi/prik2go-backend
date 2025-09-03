@@ -30,7 +30,6 @@ import java.util.concurrent.TimeoutException;
 public class OAuth2Service {
     private final SessionFactory sessionFactory;
     private final OAuthUserAccountRepository oAuthUserAccountRepository;
-    private final AuthService authService;
     private final UserAccountMapper userAccountMapper;
     private final UserAccountRepository userAccountRepository;
     private final OAuthClientRepository oAuthClientRepository;
@@ -67,7 +66,6 @@ public class OAuth2Service {
                 }
             } catch (Exception e) {
                 oAuthRequestRepository.deleteById(UUID.fromString(requestId));
-
                 throw new AuthorizationException("This Google account has not been linked yet");
             }
         }
@@ -174,7 +172,6 @@ public class OAuth2Service {
         } catch (Exception e) {
             throw new AuthorizationException("Request could not be authenticated");
         }
-
     }
 
     public boolean validateRequest(String requestId) throws AuthorizationException, TimeoutException {
