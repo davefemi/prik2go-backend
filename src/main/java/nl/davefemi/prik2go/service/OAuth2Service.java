@@ -1,6 +1,7 @@
 package nl.davefemi.prik2go.service;
 
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -65,8 +66,14 @@ public class OAuth2Service {
                     oAuthRequestRepository.save(requestEntity);
                 }
             } catch (Exception e) {
+                oAuthRequestRepository.deleteById(UUID.fromString(requestId));
+
                 throw new AuthorizationException("This Google account has not been linked yet");
             }
+        }
+        else {
+            oAuthRequestRepository.deleteById(UUID.fromString(requestId));
+            throw new AuthorizationException("This Google account has not been linked yet");
         }
     }
 
@@ -90,6 +97,7 @@ public class OAuth2Service {
             }
             UserAccountEntity userAccount = userAccountRepository.findByUserid(UUID.fromString(userId));
             if (oAuthUserAccountRepository.existsByUserAccountEntity(userAccount)){
+                oAuthRequestRepository.deleteById(UUID.fromString(requestId));
                 throw new AuthorizationException("A Google account is already linked to this user account");
             }
             oAuthUserAccountRepository.save(createOauthUserAccount(googleUser, userId));
@@ -152,20 +160,21 @@ public class OAuth2Service {
         OAuthRequestEntity oAuthRequestEntity;
         try {
             oAuthRequestEntity = oAuthRequestRepository.getReferenceById(request.getRequestCode());
+            if (oAuthRequestEntity != null) {
+                if (!passwordManager.match(request.getSecret(), oAuthRequestEntity.getSecret()))
+                    throw new AuthorizationException("Secret invalid");
+                if (oAuthRequestEntity.getExpiresAt().isBefore(Instant.now())) {
+                    oAuthRequestRepository.deleteById(request.getRequestCode());
+                    throw new TimeoutException("Request time-out");
+                }
+                if (oAuthRequestEntity.getAuthorized())
+                    return true;
+            }
+            return false;
         } catch (Exception e) {
             throw new AuthorizationException("Request could not be authenticated");
         }
-        if (oAuthRequestEntity != null) {
-            if (!passwordManager.match(request.getSecret(), oAuthRequestEntity.getSecret()))
-                throw new AuthorizationException("Secret invalid");
-            if (oAuthRequestEntity.getExpiresAt().isBefore(Instant.now())) {
-                oAuthRequestRepository.deleteById(request.getRequestCode());
-                throw new TimeoutException("Request time-out");
-            }
-            if (oAuthRequestEntity.getAuthorized())
-                return true;
-        }
-        return false;
+
     }
 
     public boolean validateRequest(String requestId) throws AuthorizationException, TimeoutException {

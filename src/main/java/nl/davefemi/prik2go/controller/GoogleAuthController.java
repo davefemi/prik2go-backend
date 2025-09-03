@@ -58,7 +58,7 @@ public class GoogleAuthController {
         return ResponseEntity.of(Optional.of(oAuth2Service.getRequestID(null)));
     }
 
-    @GetMapping("/oauth2/request/polling")
+    @PostMapping("/oauth2/request/polling")
     public ResponseEntity<?> isAuthenticated(@RequestBody RequestDTO request) {
         boolean result;
         try {
@@ -73,10 +73,10 @@ public class GoogleAuthController {
         return ResponseEntity.status(HttpStatus.OK).body(false);
     }
 
-    @GetMapping("/oauth2/request/get-session")
+    @PostMapping("/oauth2/request/get-session")
     public ResponseEntity<?> getSession(@RequestBody RequestDTO request) {
         try {
-            return ResponseEntity.of(Optional.of(oAuth2Service.getSession(request)));
+            return ResponseEntity.ok(oAuth2Service.getSession(request));
         } catch (AuthorizationException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
         }
