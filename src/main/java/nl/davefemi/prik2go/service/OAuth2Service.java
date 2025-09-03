@@ -19,7 +19,6 @@ import nl.davefemi.prik2go.data.repository.*;
 import nl.davefemi.prik2go.exceptions.AuthorizationException;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.stereotype.Service;
-
 import java.time.Instant;
 import java.util.UUID;
 import java.util.concurrent.TimeoutException;
