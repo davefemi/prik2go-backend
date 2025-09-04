@@ -15,7 +15,6 @@ import java.util.logging.Logger;
  */
 @Component
 @RequiredArgsConstructor
-@ConfigurationProperties(prefix = "external.firebase")
 public class DBConnection {
         private static final Logger logger = Logger.getLogger(DBConnection.class.getName());
         @Value("${spring.datasource.url}")

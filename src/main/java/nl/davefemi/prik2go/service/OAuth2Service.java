@@ -4,6 +4,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import nl.davefemi.prik2go.authorization.EnvHelper;
 import nl.davefemi.prik2go.authorization.PasswordManager;
 import nl.davefemi.prik2go.authorization.SecretGenerator;
 import nl.davefemi.prik2go.authorization.SessionFactory;
@@ -38,6 +39,7 @@ public class OAuth2Service {
     private final OAuthRequestRepository oAuthRequestRepository;
     private final OAuthRequestMapper oAuthRequestMapper;
     private final PasswordManager passwordManager;
+    private final EnvHelper envHelper;
 
     @Transactional
     public void validateOidcUser(OidcUser user, String userId, String requestId) throws AuthorizationException, TimeoutException {
@@ -136,11 +138,18 @@ public class OAuth2Service {
         return null;
     }
 
+    private OAuthResponseDTO generateOauthRequest(String userId){
+        OAuthResponseDTO oauthRequest =  new OAuthResponseDTO();
+        oauthRequest.setRequestCode(UUID.randomUUID());
+        oauthRequest.setSecret(SecretGenerator.generateSecret(48));
+        oauthRequest.setPollingInterval(2000L);
+        oauthRequest.setExpiresAt(Instant.now().plusSeconds(300));
+        oauthRequest.setUrl(String.format(envHelper.getBaseUrl() + "/oauth2/login/google?state=%s&uid=%s", oauthRequest.getRequestCode(), userId));
+        return oauthRequest;
+    }
+
     public OAuthResponseDTO getRequestID(String userId){
-        OAuthResponseDTO polling =  new OAuthResponseDTO(UUID.randomUUID(),
-                SecretGenerator.generateSecret(48),
-                2000L,
-                Instant.now().plusSeconds(300), userId);
+        OAuthResponseDTO polling =  generateOauthRequest(userId);
         oAuthRequestRepository.save(
                 oAuthRequestMapper.mapToEntity(
                         polling,
