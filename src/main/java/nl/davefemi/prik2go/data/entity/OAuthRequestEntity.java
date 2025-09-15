@@ -19,7 +19,7 @@ public class OAuthRequestEntity {
     @Column(name = "expires_at")
     private Instant expiresAt;
 
-    @OneToOne(fetch = FetchType.EAGER)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_session", referencedColumnName = "id")
     private UserSessionEntity userSession;
 

@@ -93,7 +93,6 @@ public class SecurityConfig {
                                         ? null
                                 : (String) req.getSession(false).getAttribute("request"));
                     } catch (AuthorizationException | TimeoutException e) {
-                        System.out.println(e.getMessage());
                         result = false;
                     }
                             req.getSession(false).removeAttribute("userId");

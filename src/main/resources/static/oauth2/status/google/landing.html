@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Authentication Status</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            color: #333;
+        }
+        .message {
+            font-size: 1.5rem;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            background-color: #fff;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        .success { color: green; }
+        .failure { color: red; }
+    </style>
+</head>
+<body>
+<div id="message" class="message"></div>
+
+<script>
+    // Read ?status=success or ?status=failure
+    const params = new URLSearchParams(window.location.search);
+    const status = params.get("status");
+
+    const messageDiv = document.getElementById("message");
+
+    if (status === "success") {
+        messageDiv.textContent = "Authentication successful, you can close this page now";
+        messageDiv.classList.add("success");
+    } else if (status === "failure") {
+        messageDiv.textContent = "Failed to authenticate, please close this page";
+        messageDiv.classList.add("failure");
+    } else {
+        messageDiv.textContent = "Unknown status";
+    }
+
+    // Try auto-close after 3 seconds
+    setTimeout(() => {
+        window.close();
+    }, 3000);
+</script>
+</body>
+</html>

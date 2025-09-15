@@ -47,10 +47,13 @@ public class GoogleAuthController {
     }
 
     @GetMapping("/oauth2/status/google")
-    public ResponseEntity<?> userLinked(@RequestParam("login") boolean result){
-        return result
-                ? ResponseEntity.status(HttpStatus.OK).body("Authentication successful")
-                : ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to authenticate");
+    public ResponseEntity<?> userLinked(@RequestParam("login") boolean status){
+        String param = status
+                ? "success"
+                : "failure";
+        return ResponseEntity.status(HttpStatus.FOUND)
+                .location(URI.create("/oauth2/status/google/landing.html?status=" + param))
+                .build();
     }
 
     @GetMapping("/oauth2/request/start")
@@ -81,13 +84,5 @@ public class GoogleAuthController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
         }
     }
-
-//    @GetMapping("/request/oauth2/link-account/google")
-//    public ResponseEntity<Void> linkUserTest(HttpServletRequest req){
-//        req.getSession(true).setAttribute("userId", "848cad6e-713d-11f0-8c9e-bea072a4b50d");
-//        return ResponseEntity.status(HttpStatus.FOUND)
-//                .location(URI.create("/oauth2/authorization/google"))
-//                .build();
-//    }
 
 }
