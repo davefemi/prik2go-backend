@@ -1,6 +1,14 @@
-FROM openjdk:21-jdk-slim
+FROM eclipse-temurin:21-jdk-jammy AS build
 WORKDIR /app
-COPY target/prik2go-backend-1.0-SNAPSHOT.jar app.jar
+COPY mvnw pom.xml ./
+COPY .mvn .mvn
+RUN ./mvnw -q -DskipTests dependency:go-offline
+COPY src src
+RUN ./mvnw -q -DskipTests package
+
+FROM eclipse-temurin:21-jre-jammy
+WORKDIR /app
+COPY --from=build /app/target/*.jar app.jar
 EXPOSE 8080
 ENV SPRING_PROFILES_ACTIVE=default
-ENTRYPOINT ["java", "-jar", "app.jar"]
+ENTRYPOINT ["java","-jar","app.jar"]
