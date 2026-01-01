@@ -38,6 +38,7 @@ public class GoogleAuthController {
 
     @GetMapping("/private/oauth2/request/start")
     public ResponseEntity<?> linkUser(HttpServletRequest req, Principal principal){
+        // TODO check in repository if user is already linked to a Google account
         return ResponseEntity.of(Optional.of(oAuth2Service.getRequestID(principal.getName())));
     }
 

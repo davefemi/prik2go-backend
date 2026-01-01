@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <link rel="icon" href="icon.png">
     <meta charset="UTF-8">
     <title>Authentication Status</title>
     <style>
@@ -29,28 +30,7 @@
 </head>
 <body>
 <div id="message" class="message"></div>
+<script src="landing.js"></script>
 
-<script>
-    // Read ?status=success or ?status=failure
-    const params = new URLSearchParams(window.location.search);
-    const status = params.get("status");
-
-    const messageDiv = document.getElementById("message");
-
-    if (status === "success") {
-        messageDiv.textContent = "Authentication successful, you can close this page now";
-        messageDiv.classList.add("success");
-    } else if (status === "failure") {
-        messageDiv.textContent = "Failed to authenticate, please close this page";
-        messageDiv.classList.add("failure");
-    } else {
-        messageDiv.textContent = "Unknown status";
-    }
-
-    // Try auto-close after 3 seconds
-    setTimeout(() => {
-        window.close();
-    }, 3000);
-</script>
 </body>
 </html>

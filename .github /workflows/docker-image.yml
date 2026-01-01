@@ -1,0 +1,60 @@
+name: Build (Docker Hub) & Deploy (Azure Container Apps)
+
+on:
+  push:
+    branches: [ "main" ]
+
+permissions:
+  contents: read
+  id-token: write   # for Azure OIDC login
+
+env:
+  IMAGE: davidfemi/prik2go-azure-backend
+  AZ_RESOURCE_GROUP: rg-prik2go
+  AZ_CONTAINERAPP_NAME: prik2go
+
+jobs:
+  build-push-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build & push (linux/amd64)
+        run: |
+          SHA=$(git rev-parse --short HEAD)
+
+          docker buildx build \
+            --platform linux/amd64 \
+            -t $IMAGE:latest \
+            -t $IMAGE:sha-$SHA \
+            . --push
+
+          echo "IMAGE_TAG=sha-$SHA" >> $GITHUB_ENV
+
+      - name: Azure login (OIDC)
+        uses: azure/login@v1
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Deploy to Azure Container Apps (new revision)
+        run: |
+          az containerapp update \
+            --name $AZ_CONTAINERAPP_NAME \
+            --resource-group $AZ_RESOURCE_GROUP \
+            --image $IMAGE:${IMAGE_TAG}
