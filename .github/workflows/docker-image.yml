@@ -1,23 +1,49 @@
-name: Build & Push to ACR (main)
+name: Build (Docker Hub) & Deploy (Azure Container Apps)
 
 on:
   push:
     branches: [ "main" ]
 
 permissions:
-  id-token: write
   contents: read
+  id-token: write   # for Azure OIDC login
 
 env:
-  ACR_NAME: myacrname
-  IMAGE_REPO: prik2go-backend
+  IMAGE: davidfemi/prik2go-azure-backend
+  AZ_RESOURCE_GROUP: rg-prik2go
+  AZ_CONTAINERAPP_NAME: prik2go
 
 jobs:
-  build-and-push:
+  build-push-deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build & push (linux/amd64)
+        run: |
+          SHA=$(git rev-parse --short HEAD)
+
+          docker buildx build \
+            --platform linux/amd64 \
+            -t $IMAGE:latest \
+            -t $IMAGE:sha-$SHA \
+            . --push
+
+          echo "IMAGE_TAG=sha-$SHA" >> $GITHUB_ENV
 
       - name: Azure login (OIDC)
         uses: azure/login@v1
@@ -26,19 +52,9 @@ jobs:
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-      - name: Log in to ACR
-        run: az acr login --name $ACR_NAME
-
-      - name: Set up Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Build & push (linux/amd64)
+      - name: Deploy to Azure Container Apps (new revision)
         run: |
-          SHA=$(git rev-parse --short HEAD)
-          LOGIN_SERVER=$(az acr show --name $ACR_NAME --query loginServer -o tsv)
-
-          docker buildx build \
-            --platform linux/amd64 \
-            -t $LOGIN_SERVER/$IMAGE_REPO:latest \
-            -t $LOGIN_SERVER/$IMAGE_REPO:sha-$SHA \
-            . --push
+          az containerapp update \
+            --name $AZ_CONTAINERAPP_NAME \
+            --resource-group $AZ_RESOURCE_GROUP \
+            --image $IMAGE:${IMAGE_TAG}
