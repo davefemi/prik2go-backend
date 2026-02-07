@@ -1,0 +1,25 @@
+services:
+  backend:
+    build: .
+    container_name: prik2go-backend
+    env_file:
+      - ../ENV-SCRIPTS/localdev/postgres17/prik2go-docker-compose.env
+    ports:
+      - "8080:8080"
+    depends_on:
+      - database
+  database:
+    image: postgres:17
+    container_name: prik2go-db
+    restart: unless-stopped
+    env_file:
+      - ../ENV-SCRIPTS/localdev/postgres17/prik2go-docker-compose.env
+#    environment:
+#      POSTGRES_DB: $POSTGRES_DB
+#      POSTGRES_USER: $POSTGRES_USER
+#      POSTGRES_PASSWORD: $POSTGRES_PASSWORD
+    ports:
+      - "5400:5432"
+    volumes:
+      - ../postgres17/data:/var/lib/postgresql/data
+      - ./init:/docker-entrypoint-initdb.d
