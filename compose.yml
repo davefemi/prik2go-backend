@@ -1,6 +1,7 @@
 services:
-  backend:
+  api-services:
     build: .
+    image: prik2go-backend:dev
     container_name: prik2go-backend
     env_file:
       - ../ENV-SCRIPTS/localdev/postgres17/prik2go-docker-compose.env
@@ -14,12 +15,8 @@ services:
     restart: unless-stopped
     env_file:
       - ../ENV-SCRIPTS/localdev/postgres17/prik2go-docker-compose.env
-#    environment:
-#      POSTGRES_DB: $POSTGRES_DB
-#      POSTGRES_USER: $POSTGRES_USER
-#      POSTGRES_PASSWORD: $POSTGRES_PASSWORD
     ports:
       - "5400:5432"
     volumes:
       - ../postgres17/data:/var/lib/postgresql/data
-      - ./init:/docker-entrypoint-initdb.d
+      - ../postgres17/init:/docker-entrypoint-initdb.d
