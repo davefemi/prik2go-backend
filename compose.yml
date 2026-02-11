@@ -1,7 +1,7 @@
 services:
   api-services:
     build: .
-    image: prik2go-backend:dev
+    image: prik2go-backend:${GIT_SHA}
     container_name: prik2go-backend
     env_file:
       - ../ENV-SCRIPTS/localdev/postgres17/prik2go-docker-compose.env
