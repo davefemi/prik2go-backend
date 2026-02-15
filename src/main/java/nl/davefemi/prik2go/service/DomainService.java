@@ -42,7 +42,8 @@ public class DomainService {
                 vestigingen.forEach(kopieLijst::put);
                 for (Map.Entry <String, Vestiging> v : vestigingen.entrySet()) {
                         mapper.leesKlanten(v.getValue()); 
-                        logger.info("Klanten voor [" + v + "] zijn ingeladen");
+                        logger.info(v.getValue().getKlantenDTO().getAantalKlanten() +
+                                " klanten voor [" + v.getKey() + "] zijn ingeladen");
                         }
                 ;
         }
