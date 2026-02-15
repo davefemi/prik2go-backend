@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+set -e
+export GIT_SHA=$(git rev-parse --short HEAD)
+echo Building with GIT_SHA=$GIT_SHA
+docker compose up --build
