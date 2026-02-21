@@ -1,4 +1,4 @@
-package nl.davefemi.prik2go.service;
+package nl.davefemi.prik2go.service.auth;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -24,7 +24,7 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 @Qualifier("defaultAuth")
-public class AuthService implements AuthServiceInterface{
+public class AuthService implements AuthServiceInterface {
     private final SessionFactory sessionFactory;
     private final UserAccountMapper userAccountMapper;
     private final UserAccountRepository userAccountRepository;
@@ -62,6 +62,10 @@ public class AuthService implements AuthServiceInterface{
         }
         throw new ApplicatieException("Unable to change password");
     }
+
+    /*
+    TODO: make sure that all authenticated requests validate session prior to execution.
+     */
 
     @Override
     public SessionResponseDTO validateUser(UserAccountDTO credentials) throws IllegalAccessException, IllegalArgumentException {
