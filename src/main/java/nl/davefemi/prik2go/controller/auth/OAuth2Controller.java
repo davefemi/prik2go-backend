@@ -17,7 +17,7 @@ import java.util.concurrent.TimeoutException;
 
 @RestController
 @RequiredArgsConstructor
-public class GoogleAuthController {
+public class OAuth2Controller {
     private final OAuth2Service oAuth2Service;
 
     /**
