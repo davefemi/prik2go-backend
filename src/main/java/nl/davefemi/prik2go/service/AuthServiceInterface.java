@@ -1,4 +1,4 @@
-package nl.davefemi.prik2go.service.auth;
+package nl.davefemi.prik2go.service;
 
 import nl.davefemi.prik2go.data.dto.UserAccountDTO;
 import nl.davefemi.prik2go.data.dto.SessionResponseDTO;
