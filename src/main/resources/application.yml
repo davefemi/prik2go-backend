@@ -32,11 +32,18 @@ spring:
             client-id: ${GOOGLE_CLIENT_ID}
             client-secret: ${GOOGLE_CLIENT_SECRET}
             redirect-uri: ${GOOGLE_REDIRECT_URI}
-            scope: email, openid, profile
+            scope:
+              - email
+              - openid
+              - profile
           azure:
             client-id: ${MSA_CLIENT_ID}
             client-secret: ${MSA_CLIENT_SECRET}
             redirect-uri: ${MSA_REDIRECT_URI}
+            scope:
+              - email
+              - openid
+              - profile
         provider:
           google:
             issuer-uri: https://accounts.google.com
@@ -46,4 +53,9 @@ external:
   jwt:
     key: ${JWT_KEY}
   base-url: ${DOMAIN_BASE_URL}
+  uri:
+    azure:
+      auth-uri: ${MSA_AUTH_URI}
+      redirect-uri: ${MSA_REDIRECT_URI}
+
 

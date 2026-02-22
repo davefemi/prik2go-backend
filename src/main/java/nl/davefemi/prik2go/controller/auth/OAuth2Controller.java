@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import nl.davefemi.prik2go.data.dto.RequestDTO;
 import nl.davefemi.prik2go.exceptions.ApplicatieException;
 import nl.davefemi.prik2go.exceptions.AuthorizationException;
+import nl.davefemi.prik2go.service.auth.AuthService;
 import nl.davefemi.prik2go.service.auth.OAuth2Service;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,42 +21,44 @@ import java.util.concurrent.TimeoutException;
 @RequiredArgsConstructor
 public class OAuth2Controller {
     private final OAuth2Service oAuth2Service;
+    private final AuthService authService;
 
     /**
-     * After obtaining a valid requestId, this method can be for authorization at Google's auth server.
+     * After obtaining a valid requestId, this method can be for authorization at an OAuth server.
      * @param requestId
      * @param userId
      * @param req
      * @return
      */
-    @GetMapping("/oauth2/login/google")
-    public ResponseEntity<?> loginUser(@RequestParam ("state") String requestId, @RequestParam("uid") String userId, HttpServletRequest req) {
+    @GetMapping("/oauth2/login")
+    public ResponseEntity<?> loginUser(@RequestParam("provider") String provider, @RequestParam ("state") String requestId, @RequestParam("uid") String userId, HttpServletRequest req)  {
         try {
             if (!oAuth2Service.validateRequest(requestId))
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Request denied");
+            HttpSession sess = req.getSession(true);
+            sess.setAttribute("provider", provider);
+            sess.setAttribute("request", requestId);
+            sess.setAttribute("userId", userId);
+            return ResponseEntity.status(HttpStatus.FOUND)
+                    .location(URI.create("/oauth2/authorization/" + provider))
+                    .build();
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
         }
-        HttpSession sess = req.getSession(true);
-        sess.setAttribute("request", requestId);
-        sess.setAttribute("userId", userId);
-        return ResponseEntity.status(HttpStatus.FOUND)
-                .location(URI.create("/oauth2/authorization/google"))
-                .build();
     }
 
     /**
-     * In order to start a login flow to link an existing and logged-in user to a Google account,
+     * In order to start a login flow to link an existing and logged-in user to a OAuth account,
      * a Request entity must be obtained which is valid for a set period of time and can be referred to
-     * log in an authenticated Google user.
+     * log in an authenticated OAuth2 user.
      * @param req
-     * @param principal containing the userId of the user that want to link a Google account
+     * @param principal containing the userId of the user that want to link an OAuth2 account
      * @return ResponsEntity containing a OAuthResponseDTO containing: uuid requestCode, secret pollingInterval,
      * expiration of request and the url leading for authorization.
      */
     @GetMapping("/private/oauth2/request/start")
     public ResponseEntity<?> linkUser(HttpServletRequest req, Principal principal, @RequestParam("provider") String provider) {
-        // TODO check in repository if user is already linked to a Google account
+        // TODO check in repository if user is already linked to an OAuth2 account
         try {
             return ResponseEntity.of(Optional.of(oAuth2Service.getRequestID(principal.getName(), provider)));
         } catch (ApplicatieException e) {
@@ -68,18 +71,18 @@ public class OAuth2Controller {
         return ResponseEntity.status(HttpStatus.OK).body("");
     }
 
-    @GetMapping("/oauth2/status/google")
+    @GetMapping("/oauth2/status")
     public ResponseEntity<?> userLinked(@RequestParam("login") boolean status){
         String param = status
                 ? "success"
                 : "failure";
         return ResponseEntity.status(HttpStatus.FOUND)
-                .location(URI.create("/oauth2/status/google/landing.html?status=" + param))
+                .location(URI.create("/oauth2/status/landing.html?status=" + param))
                 .build();
     }
 
     /**
-     * In order to start a login flow via a Google account, a Request entity must be obtained which is
+     * In order to start a login flow via an OAuth2 account, a Request entity must be obtained which is
      * valid for a set period of time and can be referred to log in an authenticated Google user
      * @return ResponsEntity containing a OAuthResponseDTO containing: uuid requestCode, secret pollingInterval,
      * expiration of request and the url leading for authorization.

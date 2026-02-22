@@ -10,8 +10,9 @@ import org.springframework.beans.factory.annotation.Value;
 @Component
 @Getter
 public class EnvHelper {
-    @Value("${DOMAIN_BASE_URL}")
+    @Value("${external.base-url}")
     private String baseUrl;
+    private final String oauthLogin = "/oauth2/login?provider=%s";
 
     @PostConstruct
     private void init(){

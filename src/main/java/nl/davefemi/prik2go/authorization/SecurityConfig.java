@@ -3,6 +3,7 @@ package nl.davefemi.prik2go.authorization;
 import jakarta.servlet.http.HttpServletRequest;
 import nl.davefemi.prik2go.exceptions.AuthorizationException;
 import nl.davefemi.prik2go.service.auth.OAuth2Service;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.servlet.filter.OrderedFormContentFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,6 +25,8 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @Configuration
 @EnableMethodSecurity
 public class SecurityConfig {
+    @Value("${external.uri.azure.auth-uri}")
+    private String endpoint;
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
@@ -73,17 +76,18 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorize ->
                         authorize
                                 .requestMatchers(
-                                        "/oauth2/code/google/**",
-                                        "/oauth2/login/google",
+                                        "/oauth2/code/**",
+                                        "/oauth2/login",
                                         "/oauth2/request/**")
                                 .permitAll()
                                 .anyRequest().authenticated()
                                 )
                 .oauth2Login(o -> o
-                        .authorizationEndpoint(a -> a.baseUri("/oauth2/authorization"))
+                        .authorizationEndpoint(a -> a.baseUri("/oauth2/authorization/"))
+                        .authorizationEndpoint(b -> b.baseUri(endpoint))
                         .redirectionEndpoint(r -> r.baseUri("/oauth2/code/*"))
                         .successHandler((req, res, auth) -> {
-                    res.sendRedirect("/oauth2/status/google?login=" + validate(req, oAuth2Service, auth));
+                    res.sendRedirect("/oauth2/status?login=" + validate(req, oAuth2Service, auth));
                 }));
         return http.build();
     }
@@ -91,7 +95,8 @@ public class SecurityConfig {
     private boolean validate(HttpServletRequest req, OAuth2Service oAuth2Service, Authentication auth){
         boolean result = true;
         try {
-            oAuth2Service.validateOidcUser("GOOGLE", (OidcUser) auth.getPrincipal(),
+            oAuth2Service.validateOidcUser((String) req.getSession(false).getAttribute("provider"),
+                    (OidcUser) auth.getPrincipal(),
                     req.getSession(false).getAttribute("userId").equals("null")
                             ? null
                             : (String) req.getSession(false).getAttribute("userId"),
@@ -101,6 +106,7 @@ public class SecurityConfig {
         } catch (AuthorizationException | TimeoutException e) {
             result = false;
         }
+        req.getSession(false).removeAttribute("provider");
         req.getSession(false).removeAttribute("userId");
         req.getSession(false).removeAttribute("request");
         return result;

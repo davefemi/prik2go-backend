@@ -7,4 +7,5 @@ public interface OAuth2Client {
     String getProviderName();
     OAuthClientEntity getOAuthClientEntity();
     String getClientURL();
+    String getAuthorizationEndpoint();
 }

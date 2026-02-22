@@ -3,7 +3,6 @@ package nl.davefemi.prik2go.data.repository;
 import lombok.RequiredArgsConstructor;
 import nl.davefemi.prik2go.exceptions.ApplicatieException;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 import java.sql.Connection;
 import java.sql.DriverManager;

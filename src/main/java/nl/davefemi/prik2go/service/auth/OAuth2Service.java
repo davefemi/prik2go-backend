@@ -43,6 +43,7 @@ public class OAuth2Service {
     private final PasswordManager passwordManager;
     private final EnvHelper envHelper;
     private final OAuth2ClientRegistry registry;
+    private final OAuth2ClientRegistry oAuth2ClientRegistry;
 
     @Transactional
     public void validateOidcUser(String provider, OidcUser user, String userId, String requestId) throws AuthorizationException, TimeoutException {
@@ -149,7 +150,7 @@ public class OAuth2Service {
         oauthRequest.setSecret(SecretGenerator.generateSecret(48));
         oauthRequest.setPollingInterval(2000L);
         oauthRequest.setExpiresAt(Instant.now().plusSeconds(300));
-        oauthRequest.setUrl(String.format(registry.getOAuth2Client(provider).getClientURL(), oauthRequest.getRequestCode(), userId));
+        oauthRequest.setUrl(String.format(registry.getOAuth2Client(provider).getClientURL()+"&state=%s&uid=%s", oauthRequest.getRequestCode(), userId));
         return oauthRequest;
     }
 
@@ -205,5 +206,9 @@ public class OAuth2Service {
             return true;
         }
         return false;
+    }
+
+    public String getProvider(String provider) throws ApplicatieException {
+        return oAuth2ClientRegistry.getOAuth2Client(provider).getProviderName();
     }
 }

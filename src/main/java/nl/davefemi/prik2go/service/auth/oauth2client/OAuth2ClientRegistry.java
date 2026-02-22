@@ -15,14 +15,14 @@ import java.util.Map;
 @Component
 @RequiredArgsConstructor
 public class OAuth2ClientRegistry {
-    private final MicrosoftClient MICROSOFT;
+    private final AzureClient AZURE;
     private final GoogleClient GOOGLE;
     private final List<OAuth2Client> clients = new ArrayList<>();
     private Map<String, OAuth2Client> providers = new HashMap<>();
 
     @PostConstruct
     private void init(){
-        clients.add(MICROSOFT);
+        clients.add(AZURE);
         clients.add(GOOGLE);
         for (OAuth2Client c : clients){
             providers.put(c.getProviderName().toLowerCase(), c);

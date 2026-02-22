@@ -5,13 +5,14 @@ import lombok.RequiredArgsConstructor;
 import nl.davefemi.prik2go.authorization.EnvHelper;
 import nl.davefemi.prik2go.data.entity.OAuthClientEntity;
 import nl.davefemi.prik2go.data.repository.OAuthClientRepository;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
 public class GoogleClient implements OAuth2Client {
     private final EnvHelper envHelper;
-    private final String PROVIDER = "GOOGLE";
+    private final String PROVIDER = "google";
     private final OAuthClientRepository repository;
     private OAuthClientEntity entity;
 
@@ -20,7 +21,7 @@ public class GoogleClient implements OAuth2Client {
         entity = repository.getOauthClientEntityByName(PROVIDER);
     }
     public String getProviderName(){
-        return entity.getName();
+        return PROVIDER;
     }
 
     @Override
@@ -30,6 +31,11 @@ public class GoogleClient implements OAuth2Client {
 
     @Override
     public String getClientURL() {
-        return envHelper.getBaseUrl() + "/oauth2/login?provider=google&state=%s&uid=%s";
+        return String.format(envHelper.getBaseUrl()+envHelper.getOauthLogin(), PROVIDER);
+    }
+
+    @Override
+    public String getAuthorizationEndpoint() {
+        return "google";
     }
 }
