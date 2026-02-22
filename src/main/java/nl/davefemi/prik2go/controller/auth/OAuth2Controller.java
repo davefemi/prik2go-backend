@@ -21,7 +21,6 @@ import java.util.concurrent.TimeoutException;
 @RequiredArgsConstructor
 public class OAuth2Controller {
     private final OAuth2Service oAuth2Service;
-    private final AuthService authService;
 
     /**
      * After obtaining a valid requestId, this method can be for authorization at an OAuth server.
