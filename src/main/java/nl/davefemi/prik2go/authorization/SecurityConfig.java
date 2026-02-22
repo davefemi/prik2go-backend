@@ -83,8 +83,7 @@ public class SecurityConfig {
                                 .anyRequest().authenticated()
                                 )
                 .oauth2Login(o -> o
-                        .authorizationEndpoint(a -> a.baseUri("/oauth2/authorization/"))
-                        .authorizationEndpoint(b -> b.baseUri(endpoint))
+                        .authorizationEndpoint(a -> a.baseUri("/oauth2/authorization/google"))
                         .redirectionEndpoint(r -> r.baseUri("/oauth2/code/*"))
                         .successHandler((req, res, auth) -> {
                     res.sendRedirect("/oauth2/status?login=" + validate(req, oAuth2Service, auth));
