@@ -33,9 +33,15 @@ spring:
             client-secret: ${GOOGLE_CLIENT_SECRET}
             redirect-uri: ${GOOGLE_REDIRECT_URI}
             scope: email, openid, profile
+          azure:
+            client-id: ${MSA_CLIENT_ID}
+            client-secret: ${MSA_CLIENT_SECRET}
+            redirect-uri: ${MSA_REDIRECT_URI}
         provider:
           google:
             issuer-uri: https://accounts.google.com
+          azure:
+            issuer-uri: https://login.microsoftonline.com/${MSA_TENANT_ID}/v2.0
 external:
   jwt:
     key: ${JWT_KEY}

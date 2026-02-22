@@ -1,9 +1,9 @@
-package nl.davefemi.prik2go.controller;
+package nl.davefemi.prik2go.controller.auth;
 
 import lombok.RequiredArgsConstructor;
 import nl.davefemi.prik2go.data.dto.UserAccountDTO;
 import nl.davefemi.prik2go.data.dto.SessionResponseDTO;
-import nl.davefemi.prik2go.service.AuthServiceInterface;
+import nl.davefemi.prik2go.service.auth.AuthServiceInterface;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
