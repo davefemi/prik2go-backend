@@ -9,9 +9,9 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class GoogleClient implements OAuth2Client {
+public class MicrosoftClient implements OAuth2Client{
     private final EnvHelper envHelper;
-    private final String PROVIDER = "GOOGLE";
+    private final String PROVIDER = "MICROSOFT";
     private final OAuthClientRepository repository;
     private OAuthClientEntity entity;
 
@@ -30,6 +30,7 @@ public class GoogleClient implements OAuth2Client {
 
     @Override
     public String getClientURL() {
-        return envHelper.getBaseUrl() + "/oauth2/login?provider=google&state=%s&uid=%s";
+        return envHelper.getBaseUrl() + "/oauth2/login?provider=microsoft&state=%s&uid=%s";
     }
+
 }

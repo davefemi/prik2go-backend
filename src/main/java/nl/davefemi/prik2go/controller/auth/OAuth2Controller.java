@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import nl.davefemi.prik2go.data.dto.RequestDTO;
+import nl.davefemi.prik2go.exceptions.ApplicatieException;
 import nl.davefemi.prik2go.exceptions.AuthorizationException;
 import nl.davefemi.prik2go.service.auth.OAuth2Service;
 import org.springframework.http.HttpStatus;
@@ -53,9 +54,13 @@ public class OAuth2Controller {
      * expiration of request and the url leading for authorization.
      */
     @GetMapping("/private/oauth2/request/start")
-    public ResponseEntity<?> linkUser(HttpServletRequest req, Principal principal){
+    public ResponseEntity<?> linkUser(HttpServletRequest req, Principal principal, @RequestParam("provider") String provider) {
         // TODO check in repository if user is already linked to a Google account
-        return ResponseEntity.of(Optional.of(oAuth2Service.getRequestID(principal.getName())));
+        try {
+            return ResponseEntity.of(Optional.of(oAuth2Service.getRequestID(principal.getName(), provider)));
+        } catch (ApplicatieException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @PostMapping("/oauth2/revoke")
@@ -80,8 +85,13 @@ public class OAuth2Controller {
      * expiration of request and the url leading for authorization.
      */
     @GetMapping("/oauth2/request/start")
-    public ResponseEntity<?> getRequest(){
-        return ResponseEntity.of(Optional.of(oAuth2Service.getRequestID(null)));
+    public ResponseEntity<?> getRequest(@RequestParam("provider") String provider) {
+        try {
+            return ResponseEntity.of(Optional.of(oAuth2Service.getRequestID(null, provider)));
+        } catch (ApplicatieException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+
     }
 
     /**

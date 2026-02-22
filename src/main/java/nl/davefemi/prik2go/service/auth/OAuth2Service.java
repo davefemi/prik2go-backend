@@ -17,7 +17,9 @@ import nl.davefemi.prik2go.data.mapper.OAuthRequestMapper;
 import nl.davefemi.prik2go.data.mapper.UserAccountMapper;
 import nl.davefemi.prik2go.data.mapper.UserSessionMapper;
 import nl.davefemi.prik2go.data.repository.*;
+import nl.davefemi.prik2go.exceptions.ApplicatieException;
 import nl.davefemi.prik2go.exceptions.AuthorizationException;
+import nl.davefemi.prik2go.service.auth.oauth2client.OAuth2ClientRegistry;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.stereotype.Service;
 import java.time.Instant;
@@ -40,15 +42,16 @@ public class OAuth2Service {
     private final OAuthRequestMapper oAuthRequestMapper;
     private final PasswordManager passwordManager;
     private final EnvHelper envHelper;
+    private final OAuth2ClientRegistry registry;
 
     @Transactional
-    public void validateOidcUser(String issuer, OidcUser user, String userId, String requestId) throws AuthorizationException, TimeoutException {
+    public void validateOidcUser(String provider, OidcUser user, String userId, String requestId) throws AuthorizationException, TimeoutException {
         if (validateRequest(requestId)) {
             if (userId == null) {
-                loginUser(issuer, user, requestId);
+                loginUser(provider, user, requestId);
             }
             else {
-                linkOidcUser(issuer, user, userId, requestId);
+                linkOidcUser(provider, user, userId, requestId);
             }
         }
     }
@@ -75,9 +78,10 @@ public class OAuth2Service {
         }
     }
 
-    private OAuthUserAccountEntity createOauthUserAccount(String issuer,OidcUser oidcUser, String userId){
+    private OAuthUserAccountEntity createOauthUserAccount(String provider,OidcUser oidcUser, String userId) throws ApplicatieException {
         OAuthUserAccountEntity oAuthUserAccount = new OAuthUserAccountEntity();
-        oAuthUserAccount.setClient(oAuthClientRepository.getOauthClientEntityByName(issuer));
+//        oAuthUserAccount.setClient(oAuthClientRepository.getOauthClientEntityByName(provider));
+        oAuthUserAccount.setClient(registry.getOAuth2Client(provider).getOAuthClientEntity());
         oAuthUserAccount.setEmail(oidcUser.getEmail());
         oAuthUserAccount.setUserAccount(userAccountRepository.findByUserid(UUID.fromString(userId)));
         return oAuthUserAccount;
@@ -138,26 +142,31 @@ public class OAuth2Service {
         return null;
     }
 
-    private OAuthResponseDTO generateOauthRequest(String userId){
+    private OAuthResponseDTO generateOauthRequest(String userId, String provider) throws ApplicatieException {
         OAuthResponseDTO oauthRequest =  new OAuthResponseDTO();
         oauthRequest.setRequestCode(UUID.randomUUID());
+        oauthRequest.setProvider(registry.getOAuth2Client(provider).getProviderName()); //check for format
         oauthRequest.setSecret(SecretGenerator.generateSecret(48));
         oauthRequest.setPollingInterval(2000L);
         oauthRequest.setExpiresAt(Instant.now().plusSeconds(300));
-        oauthRequest.setUrl(String.format(envHelper.getBaseUrl() + "/oauth2/login/google?state=%s&uid=%s", oauthRequest.getRequestCode(), userId));
+        oauthRequest.setUrl(String.format(registry.getOAuth2Client(provider).getClientURL(), oauthRequest.getRequestCode(), userId));
         return oauthRequest;
     }
 
-    public OAuthResponseDTO getRequestID(String userId){
-        OAuthResponseDTO polling =  generateOauthRequest(userId);
-        oAuthRequestRepository.save(
-                oAuthRequestMapper.mapToEntity(
-                        polling,
-                        passwordManager.hashPassword(polling.getSecret()
-                        ),
-                        false
-                )
-        );
+    public OAuthResponseDTO getRequestID(String userId, String provider) throws ApplicatieException {
+        OAuthResponseDTO polling =  generateOauthRequest(userId, provider);
+        try {
+            oAuthRequestRepository.save(
+                    oAuthRequestMapper.mapToEntity(
+                            polling,
+                            passwordManager.hashPassword(polling.getSecret()
+                            ),
+                            false, registry.getOAuth2Client(provider).getOAuthClientEntity()
+                    )
+            );
+        } catch (Exception e) {
+            throw new ApplicatieException(e.getMessage());
+        }
         return polling;
     }
 
