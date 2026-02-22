@@ -9,9 +9,9 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class GoogleClient implements OAuth2Client {
+public class OutlookClient implements OAuth2Client{
     private final EnvHelper envHelper;
-    private final String PROVIDER = "google";
+    private final String PROVIDER = "outlook";
     private final OAuthClientRepository repository;
     private OAuthClientEntity entity;
 

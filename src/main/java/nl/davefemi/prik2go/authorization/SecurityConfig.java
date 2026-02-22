@@ -1,7 +1,9 @@
 package nl.davefemi.prik2go.authorization;
 
+import jakarta.servlet.http.HttpServletRequest;
 import nl.davefemi.prik2go.exceptions.AuthorizationException;
 import nl.davefemi.prik2go.service.auth.OAuth2Service;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.servlet.filter.OrderedFormContentFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -11,6 +13,7 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -63,7 +66,7 @@ public class SecurityConfig {
 
     @Bean
     @Order(3)
-    public SecurityFilterChain oauthGoogle(HttpSecurity http, OAuth2Service oAuth2Service) throws Exception {
+    public SecurityFilterChain oauth2(HttpSecurity http, OAuth2Service oAuth2Service) throws Exception {
         http
                 .securityMatcher( "/oauth2/**")
                 .csrf(csfr -> csfr.disable())
@@ -71,32 +74,38 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorize ->
                         authorize
                                 .requestMatchers(
-                                        "/oauth2/code/google/**",
-                                        "/oauth2/login/google",
+                                        "/oauth2/code/**",
+                                        "/oauth2/login",
                                         "/oauth2/request/**")
                                 .permitAll()
                                 .anyRequest().authenticated()
                                 )
                 .oauth2Login(o -> o
-                        .authorizationEndpoint(a -> a.baseUri("/oauth2/authorization"))
+                        .authorizationEndpoint(a -> a.baseUri("/oauth2/authorization/"))
                         .redirectionEndpoint(r -> r.baseUri("/oauth2/code/*"))
                         .successHandler((req, res, auth) -> {
-                    boolean result = true;
-                    try {
-                        oAuth2Service.validateOidcUser("GOOGLE", (OidcUser) auth.getPrincipal(),
-                                req.getSession(false).getAttribute("userId").equals("null")
-                                        ? null
-                                : (String) req.getSession(false).getAttribute("userId"),
-                                req.getSession(false).getAttribute("request").equals("null")
-                                        ? null
-                                : (String) req.getSession(false).getAttribute("request"));
-                    } catch (AuthorizationException | TimeoutException e) {
-                        result = false;
-                    }
-                            req.getSession(false).removeAttribute("userId");
-                    req.getSession(false).removeAttribute("request");
-                    res.sendRedirect("/oauth2/status/google?login=" + result);
+                    res.sendRedirect("/oauth2/status?login=" + validate(req, oAuth2Service, auth));
                 }));
         return http.build();
+    }
+
+    private boolean validate(HttpServletRequest req, OAuth2Service oAuth2Service, Authentication auth){
+        boolean result = true;
+        try {
+            oAuth2Service.validateOidcUser((String) req.getSession(false).getAttribute("provider"),
+                    (OidcUser) auth.getPrincipal(),
+                    req.getSession(false).getAttribute("userId").equals("null")
+                            ? null
+                            : (String) req.getSession(false).getAttribute("userId"),
+                    req.getSession(false).getAttribute("request").equals("null")
+                            ? null
+                            : (String) req.getSession(false).getAttribute("request"));
+        } catch (AuthorizationException | TimeoutException e) {
+            result = false;
+        }
+        req.getSession(false).removeAttribute("provider");
+        req.getSession(false).removeAttribute("userId");
+        req.getSession(false).removeAttribute("request");
+        return result;
     }
 }

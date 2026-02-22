@@ -19,7 +19,7 @@ spring:
     active: default
   jpa:
     hibernate:
-      ddl-auto: validate
+      ddl-auto: update
     show-sql: true
     properties:
       hibernate.dialect: org.hibernate.dialect.PostgreSQLDialect
@@ -32,18 +32,27 @@ spring:
             client-id: ${GOOGLE_CLIENT_ID}
             client-secret: ${GOOGLE_CLIENT_SECRET}
             redirect-uri: ${GOOGLE_REDIRECT_URI}
-            scope: email, openid, profile
-          azure:
+            scope:
+              - email
+              - openid
+              - profile
+          outlook:
             client-id: ${MSA_CLIENT_ID}
             client-secret: ${MSA_CLIENT_SECRET}
             redirect-uri: ${MSA_REDIRECT_URI}
+            scope:
+              - email
+              - openid
+              - profile
         provider:
           google:
             issuer-uri: https://accounts.google.com
-          azure:
+          outlook:
             issuer-uri: https://login.microsoftonline.com/${MSA_TENANT_ID}/v2.0
 external:
   jwt:
     key: ${JWT_KEY}
   base-url: ${DOMAIN_BASE_URL}
+
+
 
