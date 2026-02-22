@@ -15,7 +15,7 @@ import java.util.Map;
 @Component
 @RequiredArgsConstructor
 public class OAuth2ClientRegistry {
-    private final AzureClient AZURE;
+    private final OutlookClient AZURE;
     private final GoogleClient GOOGLE;
     private final List<OAuth2Client> clients = new ArrayList<>();
     private Map<String, OAuth2Client> providers = new HashMap<>();

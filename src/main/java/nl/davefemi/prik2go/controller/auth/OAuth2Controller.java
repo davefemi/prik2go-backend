@@ -48,7 +48,7 @@ public class OAuth2Controller {
     }
 
     /**
-     * In order to start a login flow to link an existing and logged-in user to a OAuth account,
+     * In order to start a login flow to link an existing and logged-in user to a OAuth2 account,
      * a Request entity must be obtained which is valid for a set period of time and can be referred to
      * log in an authenticated OAuth2 user.
      * @param req

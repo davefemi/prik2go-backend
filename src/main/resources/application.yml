@@ -36,7 +36,7 @@ spring:
               - email
               - openid
               - profile
-          azure:
+          outlook:
             client-id: ${MSA_CLIENT_ID}
             client-secret: ${MSA_CLIENT_SECRET}
             redirect-uri: ${MSA_REDIRECT_URI}
@@ -47,15 +47,12 @@ spring:
         provider:
           google:
             issuer-uri: https://accounts.google.com
-          azure:
+          outlook:
             issuer-uri: https://login.microsoftonline.com/${MSA_TENANT_ID}/v2.0
 external:
   jwt:
     key: ${JWT_KEY}
   base-url: ${DOMAIN_BASE_URL}
-  uri:
-    azure:
-      auth-uri: ${MSA_AUTH_URI}
-      redirect-uri: ${MSA_REDIRECT_URI}
+
 
 

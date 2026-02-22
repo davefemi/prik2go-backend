@@ -5,7 +5,6 @@ import lombok.RequiredArgsConstructor;
 import nl.davefemi.prik2go.authorization.EnvHelper;
 import nl.davefemi.prik2go.data.entity.OAuthClientEntity;
 import nl.davefemi.prik2go.data.repository.OAuthClientRepository;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -34,8 +33,4 @@ public class GoogleClient implements OAuth2Client {
         return String.format(envHelper.getBaseUrl()+envHelper.getOauthLogin(), PROVIDER);
     }
 
-    @Override
-    public String getAuthorizationEndpoint() {
-        return "google";
-    }
 }

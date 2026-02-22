@@ -25,8 +25,6 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @Configuration
 @EnableMethodSecurity
 public class SecurityConfig {
-    @Value("${external.uri.azure.auth-uri}")
-    private String endpoint;
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
@@ -68,7 +66,7 @@ public class SecurityConfig {
 
     @Bean
     @Order(3)
-    public SecurityFilterChain oauthGoogle(HttpSecurity http, OAuth2Service oAuth2Service) throws Exception {
+    public SecurityFilterChain oauth2(HttpSecurity http, OAuth2Service oAuth2Service) throws Exception {
         http
                 .securityMatcher( "/oauth2/**")
                 .csrf(csfr -> csfr.disable())
@@ -76,8 +74,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorize ->
                         authorize
                                 .requestMatchers(
-                                        "/oauth2/code/google",
-                                        "/oauth2/login/",
+                                        "/oauth2/code/**",
+                                        "/oauth2/login",
                                         "/oauth2/request/**")
                                 .permitAll()
                                 .anyRequest().authenticated()
