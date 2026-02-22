@@ -6,10 +6,11 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import nl.davefemi.prik2go.service.auth.AuthServiceInterface;
+import nl.davefemi.prik2go.service.AuthServiceInterface;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -21,6 +22,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class JWTAuthFilter extends OncePerRequestFilter {
     private final SessionFactory sessionFactory;
+    private final AuthServiceInterface authService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
