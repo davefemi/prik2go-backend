@@ -1,13 +1,11 @@
 package nl.davefemi.prik2go.authorization;
 
 import nl.davefemi.prik2go.exceptions.AuthorizationException;
-import nl.davefemi.prik2go.service.OAuth2Service;
+import nl.davefemi.prik2go.service.auth.OAuth2Service;
 import org.springframework.boot.web.servlet.filter.OrderedFormContentFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseCookie;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -85,7 +83,7 @@ public class SecurityConfig {
                         .successHandler((req, res, auth) -> {
                     boolean result = true;
                     try {
-                        oAuth2Service.validateOidcUser((OidcUser) auth.getPrincipal(),
+                        oAuth2Service.validateOidcUser("GOOGLE", (OidcUser) auth.getPrincipal(),
                                 req.getSession(false).getAttribute("userId").equals("null")
                                         ? null
                                 : (String) req.getSession(false).getAttribute("userId"),

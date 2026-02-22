@@ -1,4 +1,4 @@
-package nl.davefemi.prik2go.service;
+package nl.davefemi.prik2go.service.domain;
 
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
