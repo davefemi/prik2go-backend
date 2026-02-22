@@ -66,17 +66,17 @@ public class OAuth2Service {
                     createSession(userAccountMapper.mapToDTO(entity.getUserAccount()), requestEntity);
                     requestEntity.setAuthorized(true);
                     oAuthRequestRepository.save(requestEntity);
-                    log.info("{} has been logged in successfully", user.getEmail());
+                    log.info("[{} has been logged in successfully]", user.getEmail());
                 }
             } catch (Exception e) {
                 oAuthRequestRepository.deleteById(UUID.fromString(requestId));
-                log.info("{} has not been linked yet", user.getEmail());
+                log.info("[{} has not been linked yet]", user.getEmail());
                 throw new AuthorizationException("This " + issuer + " account has not been linked yet");
             }
         }
         else {
             oAuthRequestRepository.deleteById(UUID.fromString(requestId));
-            log.info("{} has not been linked yet", user.getEmail());
+            log.info("[{} has not been linked yet]", user.getEmail());
             throw new AuthorizationException("This "+ issuer+" account has not been linked yet");
         }
     }
@@ -95,19 +95,19 @@ public class OAuth2Service {
             OAuthUserAccountEntity oAuthUserAccount = oAuthUserAccountRepository.findOAuthUserAccountEntityByEmail(oidcUser.getEmail());
             if (oAuthUserAccount != null){
                 if (oAuthUserAccount.getUserAccount().getUserid().toString().equals(userId)){
-                    log.info("{} is already linked to this user account", oidcUser.getEmail());
+                    log.info("[{} is already linked to this user account]", oidcUser.getEmail());
                     throw new AuthorizationException("This" + provider + " account is already linked to this user account");
                 }
             }
             UserAccountEntity userAccount = userAccountRepository.findByUserid(UUID.fromString(userId));
             if (oAuthUserAccountRepository.existsByUserAccountEntity(userAccount)){
                 oAuthRequestRepository.deleteById(UUID.fromString(requestId));
-                log.info("A {} account is already associated with this user account", provider);
-                throw new AuthorizationException("A " + provider + " account is already linked to this user account");
+                log.info("An OAuth2 account is already associated with this user account");
+                throw new AuthorizationException("[An OAuth2 account is already linked to this user account]");
             }
             oAuthUserAccountRepository.save(createOauthUserAccount(provider, oidcUser, userId));
             oAuthRequestRepository.findById(UUID.fromString(requestId)).get().setAuthorized(true);
-            log.info("{} has been linked successfully", oidcUser.getEmail());
+            log.info("[{} has been linked successfully]", oidcUser.getEmail());
         }
         catch (Exception e){
             throw new AuthorizationException(e.getMessage());
