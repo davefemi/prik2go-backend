@@ -1,4 +1,4 @@
-package nl.davefemi.prik2go.service.auth;
+package nl.davefemi.prik2go.service;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -42,19 +42,19 @@ public class OAuth2Service {
     private final EnvHelper envHelper;
 
     @Transactional
-    public void validateOidcUser(String issuer, OidcUser user, String userId, String requestId) throws AuthorizationException, TimeoutException {
+    public void validateOidcUser(OidcUser user, String userId, String requestId) throws AuthorizationException, TimeoutException {
         if (validateRequest(requestId)) {
             if (userId == null) {
-                loginUser(issuer, user, requestId);
+                loginUser(user, requestId);
             }
             else {
-                linkOidcUser(issuer, user, userId, requestId);
+                linkOidcUser(user, userId, requestId);
             }
         }
     }
 
     @Transactional
-    public void loginUser(String issuer,OidcUser user, String requestId) throws AuthorizationException {
+    public void loginUser(OidcUser user, String requestId) throws AuthorizationException {
         OAuthUserAccountEntity entity = oAuthUserAccountRepository.findOAuthUserAccountEntityByEmail(user.getEmail());
         if (entity != null) {
             try {
@@ -66,39 +66,39 @@ public class OAuth2Service {
                 }
             } catch (Exception e) {
                 oAuthRequestRepository.deleteById(UUID.fromString(requestId));
-                throw new AuthorizationException("This " + issuer + " account has not been linked yet");
+                throw new AuthorizationException("This Google account has not been linked yet");
             }
         }
         else {
             oAuthRequestRepository.deleteById(UUID.fromString(requestId));
-            throw new AuthorizationException("This "+ issuer+" account has not been linked yet");
+            throw new AuthorizationException("This Google account has not been linked yet");
         }
     }
 
-    private OAuthUserAccountEntity createOauthUserAccount(String issuer,OidcUser oidcUser, String userId){
+    private OAuthUserAccountEntity createOauthUserAccount(OidcUser googleUser, String userId){
         OAuthUserAccountEntity oAuthUserAccount = new OAuthUserAccountEntity();
-        oAuthUserAccount.setClient(oAuthClientRepository.getOauthClientEntityByName(issuer));
-        oAuthUserAccount.setEmail(oidcUser.getEmail());
+        oAuthUserAccount.setClient(oAuthClientRepository.getReferenceById((long) 1));
+        oAuthUserAccount.setEmail(googleUser.getEmail());
         oAuthUserAccount.setUserAccount(userAccountRepository.findByUserid(UUID.fromString(userId)));
         return oAuthUserAccount;
     }
 
     @Transactional
-    public void linkOidcUser(String issuer, OidcUser oidcUser, String userId, String requestId) throws AuthorizationException{
+    public void linkOidcUser(OidcUser googleUser, String userId, String requestId) throws AuthorizationException{
         try {
-            OAuthUserAccountEntity oAuthUserAccount = oAuthUserAccountRepository.findOAuthUserAccountEntityByEmail(oidcUser.getEmail());
+            OAuthUserAccountEntity oAuthUserAccount = oAuthUserAccountRepository.findOAuthUserAccountEntityByEmail(googleUser.getEmail());
             if (oAuthUserAccount != null){
                 if (oAuthUserAccount.getUserAccount().getUserid().toString().equals(userId)){
-                    throw new AuthorizationException("This" + issuer + " account is already linked to this user account");
+                    oAuthRequestRepository.deleteById(UUID.fromString(requestId));
+                    throw new AuthorizationException("This Google account is already linked to this user account");
                 }
             }
             UserAccountEntity userAccount = userAccountRepository.findByUserid(UUID.fromString(userId));
             if (oAuthUserAccountRepository.existsByUserAccountEntity(userAccount)){
                 oAuthRequestRepository.deleteById(UUID.fromString(requestId));
-                throw new AuthorizationException("A " + issuer + " account is already linked to this user account");
+                throw new AuthorizationException("A Google account is already linked to this user account");
             }
-            oAuthUserAccountRepository.save(createOauthUserAccount(issuer, oidcUser, userId));
-            oAuthRequestRepository.findById(UUID.fromString(requestId)).get().setAuthorized(true);
+            oAuthUserAccountRepository.save(createOauthUserAccount(googleUser, userId));
         }
         catch (Exception e){
             throw new AuthorizationException(e.getMessage());
