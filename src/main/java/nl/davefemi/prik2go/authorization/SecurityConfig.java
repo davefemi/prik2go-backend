@@ -76,14 +76,14 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorize ->
                         authorize
                                 .requestMatchers(
-                                        "/oauth2/code/**",
-                                        "/oauth2/login",
+                                        "/oauth2/code/google",
+                                        "/oauth2/login/",
                                         "/oauth2/request/**")
                                 .permitAll()
                                 .anyRequest().authenticated()
                                 )
                 .oauth2Login(o -> o
-                        .authorizationEndpoint(a -> a.baseUri("/oauth2/authorization/google"))
+                        .authorizationEndpoint(a -> a.baseUri("/oauth2/authorization/"))
                         .redirectionEndpoint(r -> r.baseUri("/oauth2/code/*"))
                         .successHandler((req, res, auth) -> {
                     res.sendRedirect("/oauth2/status?login=" + validate(req, oAuth2Service, auth));
