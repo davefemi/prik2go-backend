@@ -1,6 +1,7 @@
 package nl.davefemi.prik2go.controller.api;
 
 import lombok.RequiredArgsConstructor;
+import nl.davefemi.prik2go.exceptions.ApplicatieException;
 import nl.davefemi.prik2go.exceptions.VestigingException;
 import nl.davefemi.prik2go.service.auth.AuthServiceInterface;
 import nl.davefemi.prik2go.service.domain.DomainService;
@@ -21,43 +22,26 @@ public class ApiController {
 
     @PostMapping("/get-branches")
     public ResponseEntity<?> getBranches(@RequestBody String userId){
-        try {
-            logger.info("Branches successfully retrieved");
-            return ResponseEntity.of(Optional.of(domainService.getVestigingLocaties()));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
-        }
+        logger.info("Branches successfully retrieved");
+        return ResponseEntity.of(Optional.of(domainService.getVestigingLocaties()));
     }
 
     @PostMapping("/get-customers")
-    public ResponseEntity<?> getCustomer(@RequestParam("location") String location, @RequestBody String userId){
-        try {
-            logger.info("Custumers for [" + location + "] successfully retrieved");
-            return ResponseEntity.of(Optional.of(domainService.getKlantenDTO(location)));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-        }
+    public ResponseEntity<?> getCustomer(@RequestParam("location") String location, @RequestBody String userId) throws ApplicatieException {
+        logger.info("Custumers for [" + location + "] successfully retrieved");
+        return ResponseEntity.of(Optional.of(domainService.getKlantenDTO(location)));
     }
 
     @PostMapping("/get-status")
     public ResponseEntity<?> getBranchStatus(@RequestParam("location") String location, @RequestBody String userId){
-        try{
-            logger.info("Status for [" + location + "] successfully retrieved");
-            return ResponseEntity.of(Optional.of(domainService.getVestigingStatus(location)));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());        }
+        logger.info("Status for [" + location + "] successfully retrieved");
+        return ResponseEntity.of(Optional.of(domainService.getVestigingStatus(location)));
     }
 
     @PutMapping("/change-status")
-    public ResponseEntity<?> changeBranchStatus(@RequestParam("location") String location, @RequestBody String userId) {
-        try {
-            domainService.veranderVestigingStatus(location);
-            logger.info("Status for [" + location + "] set to " + domainService.getVestigingStatus(location));
-            return ResponseEntity.status(HttpStatus.OK).build();
-        } catch (VestigingException e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
-        }
+    public ResponseEntity<?> changeBranchStatus(@RequestParam("location") String location, @RequestBody String userId) throws VestigingException {
+        domainService.veranderVestigingStatus(location);
+        logger.info("Status for [" + location + "] set to " + domainService.getVestigingStatus(location));
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 }

@@ -30,20 +30,18 @@ public class OAuth2Controller {
      * @return
      */
     @GetMapping("/oauth2/login")
-    public ResponseEntity<?> loginUser(@RequestParam("provider") String provider, @RequestParam ("state") String requestId, @RequestParam("uid") String userId, HttpServletRequest req)  {
-        try {
-            if (!oAuth2Service.validateRequest(requestId))
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Request denied");
-            HttpSession sess = req.getSession(true);
-            sess.setAttribute("provider", provider);
-            sess.setAttribute("request", requestId);
-            sess.setAttribute("userId", userId);
-            return ResponseEntity.status(HttpStatus.FOUND)
-                    .location(URI.create("/oauth2/authorization/" + provider))
-                    .build();
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
-        }
+    public ResponseEntity<?> loginUser(@RequestParam("provider") String provider,
+                                       @RequestParam ("state") String requestId,
+                                       @RequestParam("uid") String userId,
+                                       HttpServletRequest req) throws AuthorizationException, TimeoutException {
+        oAuth2Service.validateRequest(requestId);
+        HttpSession sess = req.getSession(true);
+        sess.setAttribute("provider", provider);
+        sess.setAttribute("request", requestId);
+        sess.setAttribute("userId", userId);
+        return ResponseEntity.status(HttpStatus.FOUND)
+                .location(URI.create("/oauth2/authorization/" + provider))
+                .build();
     }
 
     /**
@@ -56,13 +54,10 @@ public class OAuth2Controller {
      * expiration of request and the url leading for authorization.
      */
     @GetMapping("/private/oauth2/request/start")
-    public ResponseEntity<?> linkUser(HttpServletRequest req, Principal principal, @RequestParam("provider") String provider) {
+    public ResponseEntity<?> linkUser(HttpServletRequest req, Principal principal,
+                                      @RequestParam("provider") String provider) throws ApplicatieException {
         // TODO check in repository if user is already linked to an OAuth2 account
-        try {
-            return ResponseEntity.of(Optional.of(oAuth2Service.getRequestID(principal.getName(), provider)));
-        } catch (ApplicatieException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+        return ResponseEntity.of(Optional.of(oAuth2Service.getRequestID(principal.getName(), provider)));
     }
 
     @PostMapping("/oauth2/revoke")
@@ -87,12 +82,8 @@ public class OAuth2Controller {
      * expiration of request and the url leading for authorization.
      */
     @GetMapping("/oauth2/request/start")
-    public ResponseEntity<?> getRequest(@RequestParam("provider") String provider) {
-        try {
-            return ResponseEntity.of(Optional.of(oAuth2Service.getRequestID(null, provider)));
-        } catch (ApplicatieException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+    public ResponseEntity<?> getRequest(@RequestParam("provider") String provider) throws ApplicatieException {
+        return ResponseEntity.of(Optional.of(oAuth2Service.getRequestID(null, provider)));
 
     }
 
@@ -103,27 +94,16 @@ public class OAuth2Controller {
      * @return true for an authenticated user and false for an unauthenticated user
      */
     @PostMapping("/oauth2/request/polling")
-    public ResponseEntity<?> isAuthenticated(@RequestBody RequestDTO request) {
-        boolean result;
-        try {
-            result = oAuth2Service.isUserAuthenticated(request);
-        } catch (TimeoutException e) {
-            return ResponseEntity.status(HttpStatus.REQUEST_TIMEOUT).body(e.getMessage());
-        } catch (AuthorizationException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
-        }
+    public ResponseEntity<?> isAuthenticated(@RequestBody RequestDTO request) throws AuthorizationException, TimeoutException {
+        boolean result = oAuth2Service.isUserAuthenticated(request);
         if (result)
-        return ResponseEntity.status(HttpStatus.OK).body(true);
+            return ResponseEntity.status(HttpStatus.OK).body(true);
         return ResponseEntity.status(HttpStatus.OK).body(false);
     }
 
     @PostMapping("/oauth2/request/get-session")
-    public ResponseEntity<?> getSession(@RequestBody RequestDTO request) {
-        try {
-            return ResponseEntity.ok(oAuth2Service.getSession(request));
-        } catch (AuthorizationException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
-        }
+    public ResponseEntity<?> getSession(@RequestBody RequestDTO request) throws AuthorizationException {
+        return ResponseEntity.ok(oAuth2Service.getSession(request));
     }
 
 }
