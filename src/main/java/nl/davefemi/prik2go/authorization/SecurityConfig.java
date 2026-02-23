@@ -37,7 +37,9 @@ public class SecurityConfig {
         http
                 .securityMatcher("/private/locations/**")
                 .csrf(csrf -> csrf.disable())
-                .authorizeHttpRequests(auth -> auth
+                .authorizeHttpRequests(auth -> auth.requestMatchers(
+                        "/error.js"
+                                ).permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
