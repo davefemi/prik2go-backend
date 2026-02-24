@@ -73,7 +73,7 @@ public class AuthService implements AuthServiceInterface {
         if (passwordManager.match(credentials.getPassword(), user.getPassword())){
             return createSession(user);
         }
-        throw new IllegalAccessException("Authentication failed");
+        throw new IllegalAccessException("Incorrect password");
     }
 
     @Override
@@ -86,13 +86,8 @@ public class AuthService implements AuthServiceInterface {
 
     @Override
     public boolean validateSession(UUID user, UUID tokenId){
-        if(userSessionRepository.existsByTokenId(user, tokenId)) {
-            return true;
-        }
-        return false;
+        return (userSessionRepository.existsByTokenId(user, tokenId));
     }
-
-
 
     @Override
     public boolean endSession(SessionResponseDTO session) {

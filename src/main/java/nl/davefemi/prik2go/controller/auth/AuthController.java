@@ -3,6 +3,7 @@ package nl.davefemi.prik2go.controller.auth;
 import lombok.RequiredArgsConstructor;
 import nl.davefemi.prik2go.data.dto.UserAccountDTO;
 import nl.davefemi.prik2go.data.dto.SessionResponseDTO;
+import nl.davefemi.prik2go.exceptions.ApplicatieException;
 import nl.davefemi.prik2go.service.auth.AuthServiceInterface;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
@@ -26,35 +27,22 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> loginUser(@RequestBody UserAccountDTO credentials) {
-        try{
-            SessionResponseDTO dto = service.validateUser(credentials);
-            logger.info("Login successful for [" + dto.getUser() +"]");
-            return ResponseEntity.ok(dto);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
-        }
+    public ResponseEntity<?> loginUser(@RequestBody UserAccountDTO credentials) throws IllegalAccessException {
+        SessionResponseDTO dto = service.validateUser(credentials);
+        logger.info("Login successful for [" + dto.getUser() +"]");
+        return ResponseEntity.ok(dto);
     }
 
     @PostMapping("/change-password")
-    public ResponseEntity<?> changePassword(@RequestBody UserAccountDTO credentials){
-        SessionResponseDTO token = null;
-        try {
-            token = service.changePassword(credentials);
-            logger.info("Password successfully changed for [" + credentials.getUser() + "]");
-            return ResponseEntity.ok(token);
-        } catch (Exception e) {
-            logger.warning(e.getMessage() + " for [" + credentials.getUser() +"]");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-        }
+    public ResponseEntity<?> changePassword(@RequestBody UserAccountDTO credentials) throws ApplicatieException {
+        SessionResponseDTO token = service.changePassword(credentials);
+        logger.info("Password successfully changed for [" + credentials.getUser() + "]");
+        return ResponseEntity.ok(token);
+//            logger.warning(e.getMessage() + " for [" + credentials.getUser() +"]");
     }
 
     @PostMapping("/logout")
     public ResponseEntity<?> logoutUser(@RequestBody SessionResponseDTO session) {
-        try{
-            return ResponseEntity.ok(service.endSession(session));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-        }
+        return ResponseEntity.ok(service.endSession(session));
     }
 }
