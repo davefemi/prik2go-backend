@@ -83,8 +83,10 @@ public class DomainService {
          * @param String locatie
          * @return boolean
          */
-        public boolean getVestigingStatus(String locatie) {
-//                log.info("Status [" + locatie +"] opgevraagd");
+        public boolean getVestigingStatus(String locatie) throws VestigingException {
+                if (!vestigingen.containsKey(locatie)){
+                        throw new VestigingException("Branch does not exist");
+                }
                 return vestigingen.get(locatie).isOpen();
         }
         
@@ -96,7 +98,10 @@ public class DomainService {
          * @throws VestigingException als alle vestigingen status 'gesloten' bereiken wordt deze 
          * exceptie opgegooid
          */
-        public void veranderVestigingStatus(String locatie) throws  VestigingException{
+        public void veranderVestigingStatus(String locatie) throws VestigingException{
+                if (!vestigingen.containsKey(locatie)){
+                        throw new VestigingException("Branch does not exist");
+                }
                 if(vestigingen.get(locatie).isOpen()) {
                         AtomicInteger aantalVestigingenOpen = new AtomicInteger();
                         vestigingen.values().forEach(v -> {if(v.isOpen()){
