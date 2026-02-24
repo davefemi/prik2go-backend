@@ -1,6 +1,5 @@
 package nl.davefemi.prik2go.authorization;
 
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
