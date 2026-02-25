@@ -17,6 +17,7 @@ import nl.davefemi.prik2go.data.repository.*;
 import nl.davefemi.prik2go.exceptions.ApplicatieException;
 import nl.davefemi.prik2go.exceptions.AuthorizationException;
 import nl.davefemi.prik2go.service.auth.oauth2client.OAuth2ClientRegistry;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.stereotype.Service;
 import java.time.Instant;
@@ -55,7 +56,7 @@ public class OAuth2Service {
     }
 
     @Transactional
-    public void loginUser(String issuer,OidcUser user, String requestId)  {
+    public void loginUser(String issuer,OidcUser user, String requestId) throws AuthorizationException {
         OAuthUserAccountEntity entity = oAuthUserAccountRepository.findOAuthUserAccountEntityByEmail(user.getEmail());
         OAuthRequestEntity requestEntity = oAuthRequestRepository.findById(UUID.fromString(requestId)).get();
         if (entity != null) {
@@ -67,16 +68,17 @@ public class OAuth2Service {
                     log.info("[{} has been logged in successfully]", user.getEmail());
                 }
             } catch (Exception e) {
-                oAuthRequestRepository.deleteById(UUID.fromString(requestId));
-                log.info("[{} has not been linked yet]", user.getEmail());
-                createRequestError(requestEntity,"This " + issuer + " account has not been linked yet");
+                String error = "An error occurred while logging in this " + StringUtils.capitalize(issuer) + "account";
+                log.info(error);
+                createRequestError(requestEntity,error);
+                throw new AuthorizationException(error);
             }
         }
         else {
-//            oAuthRequestRepository.deleteById(UUID.fromString(requestId));
-            log.info("[{} has not been linked yet]", user.getEmail());
-            createRequestError(requestEntity,"This "+ issuer+" account has not been linked yet");
-        }
+            String error = "This " + StringUtils.capitalize(issuer) + " account has not been linked yet";
+            log.info(error);
+            createRequestError(requestEntity,error);
+            throw new AuthorizationException(error);        }
     }
 
     private OAuthUserAccountEntity createOauthUserAccount(String provider,OidcUser oidcUser, String userId) throws ApplicatieException {
@@ -93,17 +95,18 @@ public class OAuth2Service {
             OAuthUserAccountEntity oAuthUserAccount = oAuthUserAccountRepository.findOAuthUserAccountEntityByEmail(oidcUser.getEmail());
             if (oAuthUserAccount != null) {
                 if (oAuthUserAccount.getUserAccount().getUserid().toString().equals(userId)) {
-                    log.info("[{} is already linked to this user account]", oidcUser.getEmail());
-                    createRequestError(oAuthRequestEntity,"This account is already linked to this user account");
-                    return;
+                    String error = StringUtils.capitalize(oidcUser.getEmail()) + " is already linked to this user account";
+                    log.info(error);
+                    createRequestError(oAuthRequestEntity, error);
+                    throw new AuthorizationException(error);
                 }
             }
             UserAccountEntity userAccount = userAccountRepository.findByUserid(UUID.fromString(userId));
             if (oAuthUserAccountRepository.existsByUserAccountEntity(userAccount)) {
-//                oAuthRequestRepository.deleteById(UUID.fromString(requestId));
-                log.info("An OAuth2 account is already associated with this user account");
-                createRequestError(oAuthRequestEntity, "An OAuth2 account is already linked to this user account");
-                return;
+                String error =  " An OAuth account is already associated with this user account";
+                log.info(error);
+                createRequestError(oAuthRequestEntity, error);
+                throw new AuthorizationException(error);
             }
         try {
             oAuthUserAccountRepository.save(createOauthUserAccount(provider, oidcUser, userId));
@@ -208,8 +211,7 @@ public class OAuth2Service {
         }
         if (oAuthRequestEntity != null) {
             if (oAuthRequestEntity.getExpiresAt().isBefore(Instant.now())) {
-                oAuthRequestRepository.deleteById(UUID.fromString(requestId));
-                throw new TimeoutException("Request time-out");
+                createRequestError(oAuthRequestEntity, "Request time-out");
             }
 
             return true;

@@ -2,6 +2,7 @@ package nl.davefemi.prik2go.authorization;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -42,17 +43,20 @@ public class JWTAuthFilter extends OncePerRequestFilter {
                     SecurityContextHolder.getContext().setAuthentication(auth);
                 }
             }
-            catch (Exception e){
-                setResponseError(response, e);
+            catch (ExpiredJwtException e){
+                setResponseError(response, "Session has expired. Please re-authenticate");
+                return;
+            } catch (Exception e) {
+                setResponseError(response, "Session corrupted. Please re-authenticate");
                 return;
             }
         }
         filterChain.doFilter(request, response);
     }
 
-    private void setResponseError(HttpServletResponse response, Exception e) throws IOException {
+    private void setResponseError(HttpServletResponse response, String message) throws IOException {
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         response.setContentType("application/json");
-        response.getWriter().print(new ObjectMapper().writeValueAsString(ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED, e.getMessage())));
+        response.getWriter().print(new ObjectMapper().writeValueAsString(ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED, message)));
     }
 }
