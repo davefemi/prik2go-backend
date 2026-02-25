@@ -6,7 +6,6 @@ import lombok.RequiredArgsConstructor;
 import nl.davefemi.prik2go.data.dto.RequestDTO;
 import nl.davefemi.prik2go.exceptions.ApplicatieException;
 import nl.davefemi.prik2go.exceptions.AuthorizationException;
-import nl.davefemi.prik2go.service.auth.AuthService;
 import nl.davefemi.prik2go.service.auth.OAuth2Service;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
