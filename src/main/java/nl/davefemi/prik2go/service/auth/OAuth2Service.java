@@ -193,25 +193,20 @@ public class OAuth2Service {
         return polling;
     }
 
-    public boolean isUserAuthenticated(RequestDTO request) throws AuthorizationException {
-        OAuthRequestEntity oAuthRequestEntity;
-        try {
-            oAuthRequestEntity = oAuthRequestRepository.getReferenceById(request.getRequestCode());
-            if (oAuthRequestEntity != null) {
-                if (!passwordManager.match(request.getSecret(), oAuthRequestEntity.getSecret()))
-                    throw new AuthorizationException("Secret invalid");
-                if (oAuthRequestEntity.getExpiresAt().isBefore(Instant.now())) {
-                    oAuthRequestRepository.deleteById(request.getRequestCode());
-                    throw new TimeoutException("Request time-out");
-                }
-                OAuthRequestErrorEntity error = oAuthRequestErrorRepository.findByRequestId(oAuthRequestEntity);
-                if (error != null){
-                    oAuthRequestRepository.deleteById(oAuthRequestEntity.getRequestId());
-                    throw new ApplicatieException(error.getError());
-                }
+    public boolean isUserAuthenticated(RequestDTO request) throws AuthorizationException, ApplicatieException, TimeoutException {
+        OAuthRequestEntity oAuthRequestEntity = oAuthRequestRepository.getReferenceById(request.getRequestCode());
+        if (oAuthRequestEntity != null) {
+            if (!passwordManager.match(request.getSecret(), oAuthRequestEntity.getSecret()))
+                throw new AuthorizationException("Secret invalid");
+            if (oAuthRequestEntity.getExpiresAt().isBefore(Instant.now())) {
+                oAuthRequestRepository.deleteById(request.getRequestCode());
+                throw new TimeoutException("Request time-out");
             }
-        } catch (Exception e) {
-            throw new AuthorizationException(e.getMessage());
+            OAuthRequestErrorEntity error = oAuthRequestErrorRepository.findByRequestId(oAuthRequestEntity);
+            if (error != null){
+                oAuthRequestRepository.deleteById(oAuthRequestEntity.getRequestId());
+                throw new ApplicatieException(error.getError());
+            }
         }
         return oAuthRequestEntity.getAuthorized();
     }
