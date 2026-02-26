@@ -94,7 +94,7 @@ public class OAuth2Controller {
      * @return true for an authenticated user and false for an unauthenticated user
      */
     @PostMapping("/oauth2/request/polling")
-    public ResponseEntity<?> isAuthenticated(@RequestBody RequestDTO request) throws AuthorizationException, TimeoutException {
+    public ResponseEntity<?> isAuthenticated(@RequestBody RequestDTO request) throws AuthorizationException {
         boolean result = oAuth2Service.isUserAuthenticated(request);
         if (result)
             return ResponseEntity.status(HttpStatus.OK).body(true);

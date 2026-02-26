@@ -134,7 +134,7 @@ public class OAuth2Service {
     }
 
     @Transactional
-    public SessionResponseDTO createSession(UserAccountDTO user, OAuthRequestEntity request) {
+    public void createSession(UserAccountDTO user, OAuthRequestEntity request) {
         UserSessionDTO session = sessionFactory.generateSession(user);
         userSessionRepository.deleteByUUID(user.getUser());
         UserSessionEntity entity = userSessionRepository.save(
@@ -142,7 +142,6 @@ public class OAuth2Service {
                         userAccountRepository.getReferenceById(user.getId())));
         manager.refresh(entity);
         request.setUserSession(entity);
-        return userSessionMapper.mapToResponseDTO(entity);
     }
 
     @Transactional
@@ -217,21 +216,17 @@ public class OAuth2Service {
         return oAuthRequestEntity.getAuthorized();
     }
 
-    public boolean validateRequest(String requestId) throws AuthorizationException, TimeoutException {
-        OAuthRequestEntity oAuthRequestEntity;
+    public boolean validateRequest(String requestId) throws AuthorizationException {
         try {
-            oAuthRequestEntity = oAuthRequestRepository.getReferenceById(UUID.fromString(requestId));
+            OAuthRequestEntity oAuthRequestEntity = oAuthRequestRepository.getReferenceById(UUID.fromString(requestId));
+            if (oAuthRequestEntity.getExpiresAt().isBefore(Instant.now())) {
+                createRequestError(oAuthRequestEntity, "Request time-out");
+                return false;
+            }
         } catch (Exception e) {
             throw new AuthorizationException("Request could not be authenticated");
         }
-        if (oAuthRequestEntity != null) {
-            if (oAuthRequestEntity.getExpiresAt().isBefore(Instant.now())) {
-                createRequestError(oAuthRequestEntity, "Request time-out");
-            }
-
-            return true;
-        }
-        return false;
+        return true;
     }
 
     private void createRequestError (OAuthRequestEntity request, String message) {
