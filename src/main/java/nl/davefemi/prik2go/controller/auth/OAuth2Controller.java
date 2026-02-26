@@ -32,7 +32,7 @@ public class OAuth2Controller {
     public ResponseEntity<?> loginUser(@RequestParam("provider") String provider,
                                        @RequestParam ("state") String requestId,
                                        @RequestParam("uid") String userId,
-                                       HttpServletRequest req) throws AuthorizationException, TimeoutException {
+                                       HttpServletRequest req) throws AuthorizationException {
         oAuth2Service.validateRequest(requestId);
         HttpSession sess = req.getSession(true);
         sess.setAttribute("provider", provider);
