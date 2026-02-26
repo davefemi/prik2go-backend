@@ -18,4 +18,8 @@ public interface OAuthUserAccountRepository extends JpaRepository<OAuthUserAccou
     @Transactional
     @Query("SELECT count(*)>0 FROM OAuthUserAccountEntity o WHERE o.userAccount = :user_account")
     boolean existsByUserAccountEntity(@Param("user_account") UserAccountEntity userAccount);
+
+    @Transactional
+    @Query("Select o FROM OAuthUserAccountEntity  o WHERE o.userAccount =  :user_account")
+    OAuthUserAccountEntity findOAuthUserAccountEntityByUserAccount(@Param("user_account") UserAccountEntity userAccount);
 }

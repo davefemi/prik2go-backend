@@ -59,8 +59,9 @@ public class OAuth2Controller {
         return ResponseEntity.of(Optional.of(oAuth2Service.getRequestID(principal.getName(), provider)));
     }
 
-    @PostMapping("/oauth2/revoke")
-    public ResponseEntity<?> unlinkUserAccount(){
+    @DeleteMapping("/private/oauth2/revoke")
+    public ResponseEntity<?> unlinkUserAccount(@RequestBody String userId){
+        oAuth2Service.unlinkOidcUser(userId);
         return ResponseEntity.status(HttpStatus.OK).body("");
     }
 
