@@ -18,6 +18,7 @@ import nl.davefemi.prik2go.exceptions.ApplicatieException;
 import nl.davefemi.prik2go.exceptions.AuthorizationException;
 import nl.davefemi.prik2go.service.auth.oauth2client.OAuth2ClientRegistry;
 import org.apache.commons.lang3.StringUtils;
+import org.springdoc.api.OpenApiResourceNotFoundException;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.stereotype.Service;
 import java.time.Instant;
@@ -81,6 +82,7 @@ public class OAuth2Service {
             throw new AuthorizationException(error);        }
     }
 
+
     private OAuthUserAccountEntity createOauthUserAccount(String provider,OidcUser oidcUser, String userId) throws ApplicatieException {
         OAuthUserAccountEntity oAuthUserAccount = new OAuthUserAccountEntity();
         oAuthUserAccount.setClient(registry.getOAuth2Client(provider).getOAuthClientEntity());
@@ -116,6 +118,19 @@ public class OAuth2Service {
         catch (Exception e){
             throw new AuthorizationException(e.getMessage());
         }
+    }
+
+    @Transactional
+    public void unlinkOidcUser(String userId){
+        UserAccountEntity userAccount = userAccountRepository.findByUserid(UUID.fromString(userId));
+        if (userAccount == null){
+            throw new OpenApiResourceNotFoundException("User does not exist");
+        }
+        OAuthUserAccountEntity oAuthUserAccount = oAuthUserAccountRepository.findOAuthUserAccountEntityByUserAccount(userAccount);
+        if (oAuthUserAccount == null){
+            throw new OpenApiResourceNotFoundException(("There is no Oauth-account associated with this user account"));
+        }
+        oAuthUserAccountRepository.delete(oAuthUserAccount);
     }
 
     @Transactional
