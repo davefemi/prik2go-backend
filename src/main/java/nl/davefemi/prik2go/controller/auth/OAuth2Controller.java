@@ -84,7 +84,6 @@ public class OAuth2Controller {
     @GetMapping("/oauth2/request/start")
     public ResponseEntity<?> getRequest(@RequestParam("provider") String provider) throws ApplicatieException {
         return ResponseEntity.of(Optional.of(oAuth2Service.getRequestID(null, provider)));
-
     }
 
     /**
@@ -105,5 +104,4 @@ public class OAuth2Controller {
     public ResponseEntity<?> getSession(@RequestBody RequestDTO request) throws AuthorizationException {
         return ResponseEntity.ok(oAuth2Service.getSession(request));
     }
-
 }
