@@ -18,6 +18,7 @@ import nl.davefemi.prik2go.exceptions.ApplicatieException;
 import nl.davefemi.prik2go.exceptions.AuthorizationException;
 import nl.davefemi.prik2go.service.auth.oauth2client.OAuth2ClientRegistry;
 import org.apache.commons.lang3.StringUtils;
+import org.springdoc.api.OpenApiResourceNotFoundException;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.stereotype.Service;
 import java.time.Instant;
@@ -59,27 +60,20 @@ public class OAuth2Service {
     public void loginUser(String issuer,OidcUser user, String requestId) throws AuthorizationException {
         OAuthUserAccountEntity entity = oAuthUserAccountRepository.findOAuthUserAccountEntityByEmail(user.getEmail());
         OAuthRequestEntity requestEntity = oAuthRequestRepository.findById(UUID.fromString(requestId)).get();
-        if (entity != null) {
-            try {
-                if (!requestEntity.getAuthorized()) {
-                    createSession(userAccountMapper.mapToDTO(entity.getUserAccount()), requestEntity);
-                    requestEntity.setAuthorized(true);
-                    oAuthRequestRepository.save(requestEntity);
-                    log.info("[{} has been logged in successfully]", user.getEmail());
-                }
-            } catch (Exception e) {
-                String error = "An error occurred while logging in this " + StringUtils.capitalize(issuer) + "account";
-                log.info(error);
-                createRequestError(requestEntity,error);
-                throw new AuthorizationException(error);
-            }
-        }
-        else {
+        if (entity == null){
             String error = "This " + StringUtils.capitalize(issuer) + " account has not been linked yet";
             log.info(error);
             createRequestError(requestEntity,error);
-            throw new AuthorizationException(error);        }
+            throw new AuthorizationException(error);
+        }
+        if (!requestEntity.getAuthorized()) {
+            createSession(userAccountMapper.mapToDTO(entity.getUserAccount()), requestEntity);
+            requestEntity.setAuthorized(true);
+            oAuthRequestRepository.save(requestEntity);
+            log.info("[{} has been logged in successfully]", user.getEmail());
+        }
     }
+
 
     private OAuthUserAccountEntity createOauthUserAccount(String provider,OidcUser oidcUser, String userId) throws ApplicatieException {
         OAuthUserAccountEntity oAuthUserAccount = new OAuthUserAccountEntity();
@@ -119,7 +113,20 @@ public class OAuth2Service {
     }
 
     @Transactional
-    public SessionResponseDTO createSession(UserAccountDTO user, OAuthRequestEntity request) {
+    public void unlinkOidcUser(String userId){
+        UserAccountEntity userAccount = userAccountRepository.findByUserid(UUID.fromString(userId));
+        if (userAccount == null){
+            throw new OpenApiResourceNotFoundException("User does not exist");
+        }
+        OAuthUserAccountEntity oAuthUserAccount = oAuthUserAccountRepository.findOAuthUserAccountEntityByUserAccount(userAccount);
+        if (oAuthUserAccount == null){
+            throw new OpenApiResourceNotFoundException(("There is no Oauth-account associated with this user account"));
+        }
+        oAuthUserAccountRepository.delete(oAuthUserAccount);
+    }
+
+    @Transactional
+    public void createSession(UserAccountDTO user, OAuthRequestEntity request) {
         UserSessionDTO session = sessionFactory.generateSession(user);
         userSessionRepository.deleteByUUID(user.getUser());
         UserSessionEntity entity = userSessionRepository.save(
@@ -127,7 +134,6 @@ public class OAuth2Service {
                         userAccountRepository.getReferenceById(user.getId())));
         manager.refresh(entity);
         request.setUserSession(entity);
-        return userSessionMapper.mapToResponseDTO(entity);
     }
 
     @Transactional
@@ -179,44 +185,36 @@ public class OAuth2Service {
         return polling;
     }
 
-    public boolean isUserAuthenticated(RequestDTO request) throws AuthorizationException {
-        OAuthRequestEntity oAuthRequestEntity;
-        try {
-            oAuthRequestEntity = oAuthRequestRepository.getReferenceById(request.getRequestCode());
-            if (oAuthRequestEntity != null) {
-                if (!passwordManager.match(request.getSecret(), oAuthRequestEntity.getSecret()))
-                    throw new AuthorizationException("Secret invalid");
-                if (oAuthRequestEntity.getExpiresAt().isBefore(Instant.now())) {
-                    oAuthRequestRepository.deleteById(request.getRequestCode());
-                    throw new TimeoutException("Request time-out");
-                }
-                OAuthRequestErrorEntity error = oAuthRequestErrorRepository.findByRequestId(oAuthRequestEntity);
-                if (error != null){
-                    oAuthRequestRepository.deleteById(oAuthRequestEntity.getRequestId());
-                    throw new ApplicatieException(error.getError());
-                }
-            }
-        } catch (Exception e) {
-            throw new AuthorizationException(e.getMessage());
+    public boolean isUserAuthenticated(RequestDTO request) throws AuthorizationException, ApplicatieException, TimeoutException {
+        OAuthRequestEntity oAuthRequestEntity = oAuthRequestRepository.getReferenceById(request.getRequestCode());
+        if (oAuthRequestEntity == null) {
+            throw new OpenApiResourceNotFoundException("Request is invalid");
+        }
+        if (!passwordManager.match(request.getSecret(), oAuthRequestEntity.getSecret()))
+            throw new AuthorizationException("Secret invalid");
+        if (oAuthRequestEntity.getExpiresAt().isBefore(Instant.now())) {
+            oAuthRequestRepository.deleteById(request.getRequestCode());
+            throw new TimeoutException("Request time-out");
+        }
+        OAuthRequestErrorEntity error = oAuthRequestErrorRepository.findByRequestId(oAuthRequestEntity);
+        if (error != null){
+            oAuthRequestRepository.deleteById(oAuthRequestEntity.getRequestId());
+            throw new ApplicatieException(error.getError());
         }
         return oAuthRequestEntity.getAuthorized();
     }
 
-    public boolean validateRequest(String requestId) throws AuthorizationException, TimeoutException {
-        OAuthRequestEntity oAuthRequestEntity;
+    public boolean validateRequest(String requestId) throws AuthorizationException {
         try {
-            oAuthRequestEntity = oAuthRequestRepository.getReferenceById(UUID.fromString(requestId));
+            OAuthRequestEntity oAuthRequestEntity = oAuthRequestRepository.getReferenceById(UUID.fromString(requestId));
+            if (oAuthRequestEntity.getExpiresAt().isBefore(Instant.now())) {
+                createRequestError(oAuthRequestEntity, "Request time-out");
+                return false;
+            }
         } catch (Exception e) {
             throw new AuthorizationException("Request could not be authenticated");
         }
-        if (oAuthRequestEntity != null) {
-            if (oAuthRequestEntity.getExpiresAt().isBefore(Instant.now())) {
-                createRequestError(oAuthRequestEntity, "Request time-out");
-            }
-
-            return true;
-        }
-        return false;
+        return true;
     }
 
     private void createRequestError (OAuthRequestEntity request, String message) {

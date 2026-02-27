@@ -32,7 +32,7 @@ public class OAuth2Controller {
     public ResponseEntity<?> loginUser(@RequestParam("provider") String provider,
                                        @RequestParam ("state") String requestId,
                                        @RequestParam("uid") String userId,
-                                       HttpServletRequest req) throws AuthorizationException, TimeoutException {
+                                       HttpServletRequest req) throws AuthorizationException {
         oAuth2Service.validateRequest(requestId);
         HttpSession sess = req.getSession(true);
         sess.setAttribute("provider", provider);
@@ -59,8 +59,9 @@ public class OAuth2Controller {
         return ResponseEntity.of(Optional.of(oAuth2Service.getRequestID(principal.getName(), provider)));
     }
 
-    @PostMapping("/oauth2/revoke")
-    public ResponseEntity<?> unlinkUserAccount(){
+    @DeleteMapping("/private/oauth2/revoke")
+    public ResponseEntity<?> unlinkUserAccount(@RequestBody String userId){
+        oAuth2Service.unlinkOidcUser(userId);
         return ResponseEntity.status(HttpStatus.OK).body("");
     }
 
@@ -83,7 +84,6 @@ public class OAuth2Controller {
     @GetMapping("/oauth2/request/start")
     public ResponseEntity<?> getRequest(@RequestParam("provider") String provider) throws ApplicatieException {
         return ResponseEntity.of(Optional.of(oAuth2Service.getRequestID(null, provider)));
-
     }
 
     /**
@@ -93,7 +93,7 @@ public class OAuth2Controller {
      * @return true for an authenticated user and false for an unauthenticated user
      */
     @PostMapping("/oauth2/request/polling")
-    public ResponseEntity<?> isAuthenticated(@RequestBody RequestDTO request) throws AuthorizationException, TimeoutException {
+    public ResponseEntity<?> isAuthenticated(@RequestBody RequestDTO request) throws AuthorizationException, ApplicatieException, TimeoutException {
         boolean result = oAuth2Service.isUserAuthenticated(request);
         if (result)
             return ResponseEntity.status(HttpStatus.OK).body(true);
@@ -104,5 +104,4 @@ public class OAuth2Controller {
     public ResponseEntity<?> getSession(@RequestBody RequestDTO request) throws AuthorizationException {
         return ResponseEntity.ok(oAuth2Service.getSession(request));
     }
-
 }

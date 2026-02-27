@@ -3,7 +3,6 @@ package nl.davefemi.prik2go.authorization;
 import jakarta.servlet.http.HttpServletRequest;
 import nl.davefemi.prik2go.exceptions.AuthorizationException;
 import nl.davefemi.prik2go.service.auth.OAuth2Service;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.servlet.filter.OrderedFormContentFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -53,7 +52,7 @@ public class SecurityConfig {
     @Bean
     @Order(2)
     public SecurityFilterChain jwtFilterChain(HttpSecurity http, JWTAuthFilter jWTAuthFilter) throws Exception {
-        http.securityMatcher("/auth/**", "/private/oauth2/request/**")
+        http.securityMatcher("/auth/**", "/private/**")
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth ->
                         auth.requestMatchers("/auth/login", "/auth/create-user").permitAll()
