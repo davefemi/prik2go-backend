@@ -116,13 +116,18 @@ public class OAuth2Service {
     public void unlinkOidcUser(String userId){
         UserAccountEntity userAccount = userAccountRepository.findByUserid(UUID.fromString(userId));
         if (userAccount == null){
-            throw new OpenApiResourceNotFoundException("User does not exist");
+            String error = "User does not exist";
+            log.info(error);
+            throw new OpenApiResourceNotFoundException(error);
         }
         OAuthUserAccountEntity oAuthUserAccount = oAuthUserAccountRepository.findOAuthUserAccountEntityByUserAccount(userAccount);
         if (oAuthUserAccount == null){
-            throw new OpenApiResourceNotFoundException(("There is no Oauth-account associated with this user account"));
+            String error = "There is no Oauth-account associated with this user account";
+            log.info(error);
+            throw new OpenApiResourceNotFoundException(error);
         }
         oAuthUserAccountRepository.delete(oAuthUserAccount);
+        log.info("Oauth account unlinked for {}", userId);
     }
 
     @Transactional

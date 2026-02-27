@@ -3,6 +3,7 @@ package nl.davefemi.prik2go.controller.auth;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import nl.davefemi.prik2go.data.dto.RequestDTO;
 import nl.davefemi.prik2go.exceptions.ApplicatieException;
 import nl.davefemi.prik2go.exceptions.AuthorizationException;
@@ -16,6 +17,7 @@ import java.security.Principal;
 import java.util.Optional;
 import java.util.concurrent.TimeoutException;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 public class OAuth2Controller {
@@ -62,6 +64,7 @@ public class OAuth2Controller {
     @DeleteMapping("/private/oauth2/revoke")
     public ResponseEntity<?> unlinkUserAccount(@RequestBody String userId){
         oAuth2Service.unlinkOidcUser(userId);
+        log.info("Revoking OAuth link for " + userId);
         return ResponseEntity.status(HttpStatus.OK).body("");
     }
 
