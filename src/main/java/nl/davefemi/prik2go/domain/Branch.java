@@ -1,10 +1,7 @@
 package nl.davefemi.prik2go.domain;
 
 import lombok.extern.slf4j.Slf4j;
-import nl.davefemi.prik2go.data.dto.domain.BranchDTO;
-
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 @Slf4j
