@@ -10,13 +10,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-import lombok.RequiredArgsConstructor;
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.beans.factory.annotation.Autowired;
 import nl.davefemi.prik2go.exceptions.VestigingException;
 import org.junit.*;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
 import nl.davefemi.prik2go.service.domain.DomainService;
 import nl.davefemi.prik2go.data.repository.DBConnection;
 import nl.davefemi.prik2go.data.mapper.domain.DatabaseMapper;
@@ -27,7 +25,6 @@ import nl.davefemi.prik2go.exceptions.ApplicatieException;
 /**
  * Testklasse voor klasse VestigingController
  */
-@RunWith(SpringRunner.class)
 @SpringBootTest
 public class VestigingControllerTest {
         @Autowired

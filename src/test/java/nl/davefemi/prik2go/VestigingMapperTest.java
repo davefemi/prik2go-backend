@@ -1,5 +1,8 @@
 package nl.davefemi.prik2go;
 
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.beans.factory.annotation.Autowired;
 import static org.junit.Assert.*;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -9,14 +12,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-
 import lombok.RequiredArgsConstructor;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
 import nl.davefemi.prik2go.data.repository.DBConnection;
 import nl.davefemi.prik2go.data.mapper.domain.DatabaseMapper;
 import nl.davefemi.prik2go.domain.Klant;
@@ -26,12 +24,13 @@ import nl.davefemi.prik2go.exceptions.ApplicatieException;
 /**
  * Testklasse voor klasse VestigingMapper
  */
-@RunWith(SpringRunner.class)
 @SpringBootTest
 @RequiredArgsConstructor
 public class VestigingMapperTest  {
-        private final DBConnection dbConnection;
-        private final DatabaseMapper mapper;
+        @Autowired
+        private DBConnection dbConnection;
+        @Autowired
+        private DatabaseMapper mapper;
         private Map<String, Vestiging> vestigingen;
         private Connection connection;
         private List<Klant> klanten;

@@ -1,29 +1,23 @@
 package nl.davefemi.prik2go;
 
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.beans.factory.annotation.Autowired;
 import static org.junit.Assert.*;
-
 import java.util.ArrayList;
 import java.util.List;
-
-import lombok.RequiredArgsConstructor;
 import nl.davefemi.prik2go.exceptions.VestigingException;
 import org.junit.Before;
 import org.junit.After;
-import org.junit.Test;
 import nl.davefemi.prik2go.service.domain.DomainService;
 import nl.davefemi.prik2go.domain.Vestiging;
 import nl.davefemi.prik2go.domain.Klant;
 import nl.davefemi.prik2go.data.dto.domain.KlantenDTO;
 import nl.davefemi.prik2go.exceptions.ApplicatieException;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
 
 /**
  * Testklasse voor klasse Vestiging
  */
-@RunWith(SpringRunner.class)
 @SpringBootTest
 public class VestigingTest  {
         @Autowired
