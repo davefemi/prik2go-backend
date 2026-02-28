@@ -17,6 +17,14 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
+      JWT_KEY: ${{secrets.JWT_KEY}}
+      DOMAIN_BASE_URL: ${{secrets.DOMAIN_BASE_URL}}
+      GOOGLE_CLIENT_ID: ${{secrets.GOOGLE_CLIENT_ID}}
+      GOOGLE_CLIENT_SECRET: ${{secrets.GOOGLE_CLIENT_SECRET}}
+      GOOGLE_REDIRECT_URI: ${{secrets.GOOGLE_REDIRECT_URI}}
+      MSA_CLIENT_SECRET: ${{secrets.MSA_CLIENT_SECRET}}
+      MSA_TENANT_ID: ${{secrets.MSA_TENANT_ID}}
+      MSA_REDIRECT_URI: ${{secrets.MSA_REDIRECT_URI}}
       POSTGRES_PASSWORD: ${{secrets.POSTGRES_PASSWORD}}
       POSTGRES_HOST: ${{secrets.POSTGRES_HOST}}
       POSTGRES_USER: ${{secrets.POSTGRES_USER}}
