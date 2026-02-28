@@ -16,12 +16,18 @@ jobs:
   test:
     runs-on: ubuntu-latest
 
+    env:
+      POSTGRES_PASSWORD: ${{secrets.POSTGRES_PASSWORD}}
+      POSTGRES_HOST: ${{secrets.POSTGRES_HOST}}
+      POSTGRES_USER: ${{secrets.POSTGRES_USER}}
+
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-java@v4
         with:
           java-version: '21'
           distribution: 'temurin'
+
       - name: Run tests
         run: mvn test
 
