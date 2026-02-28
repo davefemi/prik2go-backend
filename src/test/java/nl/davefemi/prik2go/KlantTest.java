@@ -1,0 +1,49 @@
+package nl.davefemi.prik2go;
+
+import static org.junit.Assert.*;
+
+import lombok.RequiredArgsConstructor;
+import org.junit.Before;
+import org.junit.After;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringRunner;
+import nl.davefemi.prik2go.domain.Klant;
+import nl.davefemi.prik2go.exceptions.ApplicatieException;
+
+/**
+ * Testklasse voor klasse Klant
+ */
+@RunWith(SpringRunner.class)
+@SpringBootTest
+@RequiredArgsConstructor
+public class KlantTest  {
+        private Klant klant1;
+        private Klant klant2;
+        
+        @Before
+        public void setUp() throws ApplicatieException {
+
+                klant1 = new Klant(20);
+                klant2 = new Klant(30);
+        }
+        
+        @After
+        public void tearDown() {
+                klant1 = null;
+                klant2 = null;
+        }
+        
+        /**
+         * Test om te verifieren dat de compare methode van de klasse werkt
+         * naar behoren. Klant moet worden vergeleken aan de hand van het klant
+         * nummer.
+         */
+        @Test
+        public void compareToTest() {
+                assertEquals("Klant 1 is kleiner dan klant 2", -1, klant1.compareTo(klant2));
+                assertEquals("Klant 2 is groter dan klant 1", 1, klant2.compareTo(klant1));
+                assertEquals("Klant 1 en 2 zijn gelijk aan zichzelf", 0, klant1.compareTo(klant1) + klant2.compareTo(klant2));
+        }
+}
