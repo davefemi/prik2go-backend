@@ -16,7 +16,7 @@ public class Klant implements Comparable<Klant> {
          * locatie wordt geinitialiseerd
          * @param nummer
          */
-        public Klant (int nummer) {
+        public Klant(int nummer) {
                 this.nummer = nummer;
         }
         

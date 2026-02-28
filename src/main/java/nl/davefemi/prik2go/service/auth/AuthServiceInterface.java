@@ -1,7 +1,7 @@
 package nl.davefemi.prik2go.service.auth;
 
-import nl.davefemi.prik2go.data.dto.UserAccountDTO;
-import nl.davefemi.prik2go.data.dto.SessionResponseDTO;
+import nl.davefemi.prik2go.data.dto.identity.UserAccountDTO;
+import nl.davefemi.prik2go.data.dto.identity.SessionResponseDTO;
 import nl.davefemi.prik2go.exceptions.ApplicatieException;
 
 import java.util.UUID;

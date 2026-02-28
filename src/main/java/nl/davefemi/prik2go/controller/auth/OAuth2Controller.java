@@ -4,7 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import nl.davefemi.prik2go.data.dto.RequestDTO;
+import nl.davefemi.prik2go.data.dto.auth.RequestDTO;
 import nl.davefemi.prik2go.exceptions.ApplicatieException;
 import nl.davefemi.prik2go.exceptions.AuthorizationException;
 import nl.davefemi.prik2go.service.auth.OAuth2Service;

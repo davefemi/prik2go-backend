@@ -1,6 +1,7 @@
 package nl.davefemi.prik2go.domain;
 
-import nl.davefemi.prik2go.data.dto.KlantenDTO;
+import nl.davefemi.prik2go.data.dto.domain.BranchDTO;
+import nl.davefemi.prik2go.data.dto.domain.KlantenDTO;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -27,7 +28,7 @@ public class Vestiging implements Comparable<Vestiging> {
          * Constructor voor deze klasse
          * @param locatie van deze Vestiging.
          */
-        public Vestiging (String locatie) {
+        public Vestiging(String locatie) {
                 this.locatie = locatie;
         }
         
@@ -80,6 +81,7 @@ public class Vestiging implements Comparable<Vestiging> {
          */
         public KlantenDTO getKlantenDTO(){
                 List<Integer> klantNummers = new ArrayList<Integer>();
+
                 if (huidigeKlanten != null) {
                         synchronized (this) {
                                 for (Klant k : huidigeKlanten) {
@@ -88,7 +90,7 @@ public class Vestiging implements Comparable<Vestiging> {
                                 Collections.sort(klantNummers);
                         }
                 }
-                return new KlantenDTO(klantNummers); 
+                return new KlantenDTO(klantNummers);
         }
         
         /**

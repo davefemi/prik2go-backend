@@ -2,9 +2,10 @@ package nl.davefemi.prik2go.service.domain;
 
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
-import nl.davefemi.prik2go.data.mapper.DatabaseMapper;
+import nl.davefemi.prik2go.data.dto.domain.KlantenDTO;
+import nl.davefemi.prik2go.data.mapper.domain.DatabaseMapper;
 import nl.davefemi.prik2go.domain.Klant;
-import nl.davefemi.prik2go.data.dto.KlantenDTO;
+import nl.davefemi.prik2go.data.dto.domain.BranchDTO;
 import nl.davefemi.prik2go.domain.Vestiging;
 import nl.davefemi.prik2go.exceptions.ApplicatieException;
 import nl.davefemi.prik2go.exceptions.VestigingException;
