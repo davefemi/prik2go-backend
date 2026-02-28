@@ -2,11 +2,10 @@ package nl.davefemi.prik2go;
 
 import static org.junit.Assert.*;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
-import lombok.RequiredArgsConstructor;
-import org.junit.Before;
-import org.junit.After;
 import nl.davefemi.prik2go.domain.Klant;
 import nl.davefemi.prik2go.exceptions.ApplicatieException;
 
@@ -14,19 +13,18 @@ import nl.davefemi.prik2go.exceptions.ApplicatieException;
  * Testklasse voor klasse Klant
  */
 @SpringBootTest
-@RequiredArgsConstructor
 public class KlantTest  {
         private Klant klant1;
         private Klant klant2;
         
-        @Before
+        @BeforeEach
         public void setUp() throws ApplicatieException {
 
                 klant1 = new Klant(20);
                 klant2 = new Klant(30);
         }
         
-        @After
+        @AfterEach
         public void tearDown() {
                 klant1 = null;
                 klant2 = null;
