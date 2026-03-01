@@ -8,13 +8,25 @@ import lombok.extern.slf4j.Slf4j;
 import nl.davefemi.prik2go.authorization.PasswordManager;
 import nl.davefemi.prik2go.authorization.SecretGenerator;
 import nl.davefemi.prik2go.authorization.SessionFactory;
-import nl.davefemi.prik2go.data.dto.*;
-import nl.davefemi.prik2go.data.entity.*;
-import nl.davefemi.prik2go.data.mapper.OAuthRequestMapper;
-import nl.davefemi.prik2go.data.mapper.UserAccountMapper;
-import nl.davefemi.prik2go.data.mapper.UserSessionMapper;
-import nl.davefemi.prik2go.data.repository.*;
-import nl.davefemi.prik2go.exceptions.ApplicatieException;
+import nl.davefemi.prik2go.data.dto.auth.OAuthResponseDTO;
+import nl.davefemi.prik2go.data.dto.auth.RequestDTO;
+import nl.davefemi.prik2go.data.dto.identity.SessionResponseDTO;
+import nl.davefemi.prik2go.data.dto.identity.UserAccountDTO;
+import nl.davefemi.prik2go.data.dto.identity.UserSessionDTO;
+import nl.davefemi.prik2go.data.entity.auth.OAuthRequestEntity;
+import nl.davefemi.prik2go.data.entity.auth.OAuthRequestErrorEntity;
+import nl.davefemi.prik2go.data.entity.auth.OAuthUserAccountEntity;
+import nl.davefemi.prik2go.data.entity.identity.UserAccountEntity;
+import nl.davefemi.prik2go.data.entity.identity.UserSessionEntity;
+import nl.davefemi.prik2go.data.mapper.auth.OAuthRequestMapper;
+import nl.davefemi.prik2go.data.mapper.identity.UserAccountMapper;
+import nl.davefemi.prik2go.data.mapper.identity.UserSessionMapper;
+import nl.davefemi.prik2go.data.repository.auth.OAuthRequestErrorRepository;
+import nl.davefemi.prik2go.data.repository.auth.OAuthRequestRepository;
+import nl.davefemi.prik2go.data.repository.auth.OAuthUserAccountRepository;
+import nl.davefemi.prik2go.data.repository.identity.UserAccountRepository;
+import nl.davefemi.prik2go.data.repository.identity.UserSessionRepository;
+import nl.davefemi.prik2go.exceptions.Prik2GoException;
 import nl.davefemi.prik2go.exceptions.AuthorizationException;
 import nl.davefemi.prik2go.service.auth.oauth2client.OAuth2ClientRegistry;
 import org.apache.commons.lang3.StringUtils;
@@ -75,7 +87,7 @@ public class OAuth2Service {
     }
 
 
-    private OAuthUserAccountEntity createOauthUserAccount(String provider,OidcUser oidcUser, String userId) throws ApplicatieException {
+    private OAuthUserAccountEntity createOauthUserAccount(String provider,OidcUser oidcUser, String userId) throws Prik2GoException {
         OAuthUserAccountEntity oAuthUserAccount = new OAuthUserAccountEntity();
         oAuthUserAccount.setClient(registry.getOAuth2Client(provider).getOAuthClientEntity());
         oAuthUserAccount.setEmail(oidcUser.getEmail());
@@ -162,7 +174,7 @@ public class OAuth2Service {
         return null;
     }
 
-    private OAuthResponseDTO generateOauthRequest(String userId, String provider) throws ApplicatieException {
+    private OAuthResponseDTO generateOauthRequest(String userId, String provider) throws Prik2GoException {
         OAuthResponseDTO oauthRequest =  new OAuthResponseDTO();
         oauthRequest.setRequestCode(UUID.randomUUID());
         oauthRequest.setProvider(registry.getOAuth2Client(provider).getProviderName()); //check for format
@@ -173,7 +185,7 @@ public class OAuth2Service {
         return oauthRequest;
     }
 
-    public OAuthResponseDTO getRequestID(String userId, String provider) throws ApplicatieException {
+    public OAuthResponseDTO getRequestID(String userId, String provider) throws Prik2GoException {
         OAuthResponseDTO polling =  generateOauthRequest(userId, provider);
         try {
             oAuthRequestRepository.save(
@@ -185,12 +197,12 @@ public class OAuth2Service {
                     )
             );
         } catch (Exception e) {
-            throw new ApplicatieException(e.getMessage());
+            throw new Prik2GoException(e.getMessage());
         }
         return polling;
     }
 
-    public boolean isUserAuthenticated(RequestDTO request) throws AuthorizationException, ApplicatieException, TimeoutException {
+    public boolean isUserAuthenticated(RequestDTO request) throws AuthorizationException, Prik2GoException, TimeoutException {
         OAuthRequestEntity oAuthRequestEntity = oAuthRequestRepository.getReferenceById(request.getRequestCode());
         if (oAuthRequestEntity == null) {
             throw new OpenApiResourceNotFoundException("Request is invalid");
@@ -204,7 +216,7 @@ public class OAuth2Service {
         OAuthRequestErrorEntity error = oAuthRequestErrorRepository.findByRequestId(oAuthRequestEntity);
         if (error != null){
             oAuthRequestRepository.deleteById(oAuthRequestEntity.getRequestId());
-            throw new ApplicatieException(error.getError());
+            throw new Prik2GoException(error.getError());
         }
         return oAuthRequestEntity.getAuthorized();
     }

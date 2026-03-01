@@ -2,7 +2,7 @@ package nl.davefemi.prik2go.service.auth.oauth2client;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import nl.davefemi.prik2go.exceptions.ApplicatieException;
+import nl.davefemi.prik2go.exceptions.Prik2GoException;
 import org.springframework.stereotype.Component;
 
 
@@ -29,9 +29,9 @@ public class OAuth2ClientRegistry {
         }
     }
 
-    public OAuth2Client getOAuth2Client(String provider) throws ApplicatieException {
+    public OAuth2Client getOAuth2Client(String provider) throws Prik2GoException {
         if (!providers.containsKey(provider.toLowerCase()))
-            throw new ApplicatieException("Provider does not exist");
+            throw new Prik2GoException("Provider does not exist");
         return providers.get(provider.toLowerCase());
     }
 }

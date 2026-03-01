@@ -3,8 +3,8 @@ package nl.davefemi.prik2go.service.auth.oauth2client;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import nl.davefemi.prik2go.authorization.EnvHelper;
-import nl.davefemi.prik2go.data.entity.OAuthClientEntity;
-import nl.davefemi.prik2go.data.repository.OAuthClientRepository;
+import nl.davefemi.prik2go.data.entity.auth.OAuthClientEntity;
+import nl.davefemi.prik2go.data.repository.auth.OAuthClientRepository;
 import org.springframework.stereotype.Component;
 
 @Component
