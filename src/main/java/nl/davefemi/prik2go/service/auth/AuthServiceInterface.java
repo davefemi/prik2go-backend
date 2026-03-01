@@ -1,8 +1,8 @@
 package nl.davefemi.prik2go.service.auth;
 
-import nl.davefemi.prik2go.data.dto.UserAccountDTO;
-import nl.davefemi.prik2go.data.dto.SessionResponseDTO;
-import nl.davefemi.prik2go.exceptions.ApplicatieException;
+import nl.davefemi.prik2go.data.dto.identity.UserAccountDTO;
+import nl.davefemi.prik2go.data.dto.identity.SessionResponseDTO;
+import nl.davefemi.prik2go.exceptions.Prik2GoException;
 
 import java.util.UUID;
 
@@ -16,7 +16,7 @@ public interface AuthServiceInterface {
 
     boolean validateSession(UUID user, UUID tokenId);
 
-    SessionResponseDTO changePassword(UserAccountDTO credentials) throws ApplicatieException, IllegalArgumentException;
+    SessionResponseDTO changePassword(UserAccountDTO credentials) throws Prik2GoException, IllegalArgumentException;
 
     boolean endSession(SessionResponseDTO session);
 }

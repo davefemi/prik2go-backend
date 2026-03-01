@@ -4,9 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.Data;
-
 import java.time.Instant;
-import java.time.LocalDate;
 
 @Data
 @JsonSerialize

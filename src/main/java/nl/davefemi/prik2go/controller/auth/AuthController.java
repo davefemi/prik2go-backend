@@ -1,12 +1,11 @@
 package nl.davefemi.prik2go.controller.auth;
 
 import lombok.RequiredArgsConstructor;
-import nl.davefemi.prik2go.data.dto.UserAccountDTO;
-import nl.davefemi.prik2go.data.dto.SessionResponseDTO;
-import nl.davefemi.prik2go.exceptions.ApplicatieException;
+import nl.davefemi.prik2go.data.dto.identity.UserAccountDTO;
+import nl.davefemi.prik2go.data.dto.identity.SessionResponseDTO;
+import nl.davefemi.prik2go.exceptions.Prik2GoException;
 import nl.davefemi.prik2go.service.auth.AuthServiceInterface;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -34,7 +33,7 @@ public class AuthController {
     }
 
     @PostMapping("/change-password")
-    public ResponseEntity<?> changePassword(@RequestBody UserAccountDTO credentials) throws ApplicatieException {
+    public ResponseEntity<?> changePassword(@RequestBody UserAccountDTO credentials) throws Prik2GoException {
         SessionResponseDTO token = service.changePassword(credentials);
         logger.info("Password successfully changed for [" + credentials.getUser() + "]");
         return ResponseEntity.ok(token);
