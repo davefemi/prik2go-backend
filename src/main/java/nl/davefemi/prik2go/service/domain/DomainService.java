@@ -100,7 +100,7 @@ public class DomainService {
                 closeBranch(location);}
             else {
                 log.warn("Cannot close [{}]. Closing all locations is not allowed", location);
-                throw new BranchException("Er moet minstens 1 vestiging open blijven");
+                throw new BranchException("Closing all branches is not allowed");
             }
         }
         else {
