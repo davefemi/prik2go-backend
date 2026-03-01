@@ -13,7 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.ArrayList;
 import java.util.List;
 
-import nl.davefemi.prik2go.exceptions.Prik2GoException;
+import nl.davefemi.prik2go.controller.exceptions.Prik2GoException;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;

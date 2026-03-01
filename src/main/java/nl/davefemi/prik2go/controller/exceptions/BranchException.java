@@ -1,4 +1,4 @@
-package nl.davefemi.prik2go.exceptions;
+package nl.davefemi.prik2go.controller.exceptions;
 
 @SuppressWarnings("serial")
 public class BranchException extends Exception {
