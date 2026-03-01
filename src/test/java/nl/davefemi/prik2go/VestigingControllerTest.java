@@ -12,8 +12,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.beans.factory.annotation.Autowired;
-import nl.davefemi.prik2go.exceptions.VestigingException;
-import nl.davefemi.prik2go.service.domain.DomainService;
+import nl.davefemi.prik2go.service.domain.DomainServiceOld;
 import nl.davefemi.prik2go.data.repository.DBConnection;
 import nl.davefemi.prik2go.data.mapper.domain.DatabaseMapper;
 import nl.davefemi.prik2go.domain.Klant;
@@ -28,7 +27,7 @@ public class VestigingControllerTest {
         @Autowired
         private DBConnection dbConnection;
         @Autowired
-        private DomainService controller;
+        private DomainServiceOld controller;
         @Autowired
         private DatabaseMapper mapper;
         private Connection connection;

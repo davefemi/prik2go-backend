@@ -15,19 +15,4 @@ public class BranchDTO {
         private List<Long> customerIds = new ArrayList<>();
         private int numberOfCustomers = customerIds.size();
 
-        /**
-         * Keert een lijst met klantnummers terug
-         * @return klantnummers
-         */
-        public List<Long> getCustomerIds(){
-                return customerIds;
-        }
-        
-        /**
-         * Geeft het aantal klanten bij deze vestiging
-         * @return aantal klanten
-         */
-        public int getNumberOfCustomers() {
-                return numberOfCustomers;
-        }
 }

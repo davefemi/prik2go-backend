@@ -2,17 +2,13 @@ package nl.davefemi.prik2go;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.beans.factory.annotation.Autowired;
-import static org.junit.Assert.*;
-import java.util.ArrayList;
+
 import java.util.List;
-import nl.davefemi.prik2go.exceptions.VestigingException;
-import nl.davefemi.prik2go.service.domain.DomainService;
+
+import nl.davefemi.prik2go.service.domain.DomainServiceOld;
 import nl.davefemi.prik2go.domain.Vestiging;
-import nl.davefemi.prik2go.domain.Klant;
-import nl.davefemi.prik2go.data.dto.domain.KlantenDTO;
 import nl.davefemi.prik2go.exceptions.ApplicatieException;
 
 /**
@@ -21,7 +17,7 @@ import nl.davefemi.prik2go.exceptions.ApplicatieException;
 @SpringBootTest
 public class VestigingTest  {
         @Autowired
-        private DomainService controller;
+        private DomainServiceOld controller;
         private List<String> vestigingen;
         private Vestiging vestiging1;
         private Vestiging vestiging2;

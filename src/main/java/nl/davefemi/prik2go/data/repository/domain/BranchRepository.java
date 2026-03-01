@@ -11,7 +11,7 @@ import java.util.List;
 @Repository
 public interface BranchRepository extends JpaRepository<BranchEntity, String> {
 
-    @Query("SELECT          V.location " +
+    @Query("SELECT          V " +
             "FROM            CustomerEntity K " +
             "JOIN PostcodeInfoEntity KP ON K.postcode.postcode = KP.postcode, " +
             "BranchEntity V " +

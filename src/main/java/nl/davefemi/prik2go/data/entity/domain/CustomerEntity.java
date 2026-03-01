@@ -11,7 +11,7 @@ public class CustomerEntity {
     @Id
     private Long nr;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "postcode", referencedColumnName = "postcode")
     private PostcodeInfoEntity postcode;
 }

@@ -9,6 +9,7 @@ import nl.davefemi.prik2go.domain.Branch;
 import nl.davefemi.prik2go.domain.Customer;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -19,13 +20,13 @@ public class BranchMapper {
     private final CustomerMapper customerMapper;
 
     public Branch mapEntityToDomain(BranchEntity branchEntity){
-        Branch branch = new Branch(branchEntity.getName());
-        List<CustomerEntity> customers = customerRepository.getCustomersByBranch(branchEntity);
-        for (CustomerEntity c : customers){
-            Customer customer = customerMapper.mapEntityToDomain(c);
-            branch.getInitialCustomers().add(customer);
-            branch.getCurrentCustomers().add(customer);
+        List<Customer> customers = new ArrayList<>();
+        for (CustomerEntity customer: customerRepository.getCustomersByBranch(branchEntity)){
+            Customer c = customerMapper.mapEntityToDomain(customer);
+            customers.add(c);
         }
+        Branch branch = new Branch(branchEntity.getName(), customers);
+
         return branch;
     }
 
@@ -36,6 +37,7 @@ public class BranchMapper {
             dto.getCustomerIds().add(c.getNumber());
         }
         Collections.sort(dto.getCustomerIds());
+        dto.setNumberOfCustomers(customers.size());
         return dto;
     }
 }

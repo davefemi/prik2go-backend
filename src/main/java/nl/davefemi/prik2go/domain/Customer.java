@@ -5,11 +5,27 @@ import lombok.Data;
 import java.util.ArrayList;
 import java.util.List;
 
-@Data
 public class Customer implements Comparable<Customer>{
     private long number;
-    private List<String> closestLocations = new ArrayList<>();
+    private List<String> closestBranches = new ArrayList<>();
 
+    public Customer(long number) {
+        this.number = number;
+    }
+
+    public void setClosestBranches(List<String> locations) {
+        closestBranches = locations;
+    }
+
+    public long getNumber(){
+        return number;
+    }
+
+    public List<String> getClosestLocations(){
+        List<String> locations = new ArrayList<String>();
+        closestBranches.forEach(locations::add);
+        return locations;
+    }
     /**
      * Comparator methode voor deze klasse op basis van Klantnummer
      */

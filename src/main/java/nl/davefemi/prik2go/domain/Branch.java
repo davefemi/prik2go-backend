@@ -11,8 +11,10 @@ public class Branch implements Comparable<Branch>{
     private List<Customer> initialCustomers = new ArrayList<>();
     private List<Customer> currentCustomers = new ArrayList<>();
 
-    public Branch(String location){
+    public Branch(String location, List<Customer> initialCustomers){
         this.location = location;
+        this.initialCustomers = initialCustomers;
+        initialCustomers.forEach(currentCustomers::add);
     }
 
     public String getLocation(){

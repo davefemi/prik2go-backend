@@ -8,6 +8,7 @@ import nl.davefemi.prik2go.data.repository.domain.BranchRepository;
 import nl.davefemi.prik2go.domain.Customer;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Component
@@ -16,15 +17,16 @@ public class CustomerMapper {
     private final BranchRepository branchRepository;
 
     public Customer mapEntityToDomain(CustomerEntity customerEntity){
-        Customer customer = new Customer();
-        customer.setNumber(customerEntity.getNr());
+        Customer customer = new Customer(customerEntity.getNr());
         List<BranchEntity> branches = branchRepository.getClosestBranches(customerEntity.getNr());
-        for (BranchEntity b: branches){
-            synchronized (this) {
-                customer.getClosestLocations().add(b.getName());
+        List<String> locations = new ArrayList<>();
+        synchronized (this) {
+            for (BranchEntity b : branches) {
+
+                locations.add((b.getName()));
             }
+            customer.setClosestBranches(locations);
         }
         return customer;
     }
-
 }
