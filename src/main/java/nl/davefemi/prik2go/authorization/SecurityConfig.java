@@ -1,7 +1,7 @@
 package nl.davefemi.prik2go.authorization;
 
 import jakarta.servlet.http.HttpServletRequest;
-import nl.davefemi.prik2go.exceptions.AuthorizationException;
+import nl.davefemi.prik2go.controller.exceptions.AuthorizationException;
 import nl.davefemi.prik2go.service.auth.OAuth2Service;
 import org.springframework.boot.web.servlet.filter.OrderedFormContentFilter;
 import org.springframework.context.annotation.Bean;
