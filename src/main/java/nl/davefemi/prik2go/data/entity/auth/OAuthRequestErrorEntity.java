@@ -16,7 +16,7 @@ public class OAuthRequestErrorEntity {
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.CASCADE)
-    @JoinColumn(name = "request", referencedColumnName = "requestId")
+    @JoinColumn(name = "request", referencedColumnName = "request_id")
     private OAuthRequestEntity requestId;
 
     @Column(name = "error")
