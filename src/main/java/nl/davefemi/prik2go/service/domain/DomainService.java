@@ -8,8 +8,8 @@ import nl.davefemi.prik2go.data.mapper.domain.BranchMapper;
 import nl.davefemi.prik2go.data.repository.domain.BranchRepository;
 import nl.davefemi.prik2go.domain.Branch;
 import nl.davefemi.prik2go.domain.Customer;
-import nl.davefemi.prik2go.exceptions.Prik2GoException;
-import nl.davefemi.prik2go.exceptions.BranchException;
+import nl.davefemi.prik2go.controller.exceptions.Prik2GoException;
+import nl.davefemi.prik2go.controller.exceptions.BranchException;
 import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
@@ -100,7 +100,7 @@ public class DomainService {
                 closeBranch(location);}
             else {
                 log.warn("Cannot close [{}]. Closing all locations is not allowed", location);
-                throw new BranchException("Er moet minstens 1 vestiging open blijven");
+                throw new BranchException("Closing all branches is not allowed");
             }
         }
         else {

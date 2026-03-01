@@ -15,7 +15,7 @@ import nl.davefemi.prik2go.data.mapper.identity.UserAccountMapper;
 import nl.davefemi.prik2go.data.mapper.identity.UserSessionMapper;
 import nl.davefemi.prik2go.data.repository.identity.UserAccountRepository;
 import nl.davefemi.prik2go.data.repository.identity.UserSessionRepository;
-import nl.davefemi.prik2go.exceptions.Prik2GoException;
+import nl.davefemi.prik2go.controller.exceptions.Prik2GoException;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 

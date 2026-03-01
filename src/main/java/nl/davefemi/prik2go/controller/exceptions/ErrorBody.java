@@ -1,4 +1,4 @@
-package nl.davefemi.prik2go.exceptions;
+package nl.davefemi.prik2go.controller.exceptions;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;

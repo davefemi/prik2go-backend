@@ -1,4 +1,4 @@
-package nl.davefemi.prik2go.controller;
+package nl.davefemi.prik2go.controller.exceptions;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
