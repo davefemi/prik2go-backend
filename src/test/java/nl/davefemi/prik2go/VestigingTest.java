@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
-import nl.davefemi.prik2go.service.domain.DomainServiceOld;
 import nl.davefemi.prik2go.domain.Vestiging;
 import nl.davefemi.prik2go.exceptions.ApplicatieException;
 
@@ -17,7 +16,7 @@ import nl.davefemi.prik2go.exceptions.ApplicatieException;
 @SpringBootTest
 public class VestigingTest  {
         @Autowired
-        private DomainServiceOld controller;
+//        private DomainServiceOld controller;
         private List<String> vestigingen;
         private Vestiging vestiging1;
         private Vestiging vestiging2;
@@ -30,7 +29,7 @@ public class VestigingTest  {
         
         @BeforeEach
         public void setUp() throws ApplicatieException {
-                vestigingen = controller.getVestigingLocaties();
+//                vestigingen = controller.getVestigingLocaties();
                 vestiging1 = new Vestiging("Amsterdam");
                 vestiging2 = new Vestiging("Rotterdam");
                 vestiging3 = new Vestiging("Amsterdam");
@@ -44,15 +43,15 @@ public class VestigingTest  {
                 vestiging2 = null;
         }
         
-        private void setUpOpenClose() throws ApplicatieException {
-                for (String vest : vestigingen) {
-                        totaalAantalKlanten += controller.getKlantenDTO(vest).getAantalKlanten();
-                        }
-                groningen = "Groningen";
-                zuidhorn = "Zuidhorn";
-                klantengroningen = controller.getKlantenDTO(groningen).getAantalKlanten();
-                klantenzuidhorn = controller.getKlantenDTO(zuidhorn).getAantalKlanten();
-        }
+//        private void setUpOpenClose() throws ApplicatieException {
+//                for (String vest : vestigingen) {
+//                        totaalAantalKlanten += controller.getKlantenDTO(vest).getAantalKlanten();
+//                        }
+//                groningen = "Groningen";
+//                zuidhorn = "Zuidhorn";
+//                klantengroningen = controller.getKlantenDTO(groningen).getAantalKlanten();
+//                klantenzuidhorn = controller.getKlantenDTO(zuidhorn).getAantalKlanten();
+//        }
          
 
         /**

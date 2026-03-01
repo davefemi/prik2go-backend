@@ -65,8 +65,8 @@ public class Branch implements Comparable<Branch>{
     public synchronized void setOpen() {
         if (!open) {
             open = true;
-            if (currentCustomers != null) {
-                currentCustomers.forEach(this::addCustomer);
+            if (initialCustomers != null) {
+                initialCustomers.forEach(this::addCustomer);
                 log.info("Branch [" + location + "] has been re-opened");
             }
         }

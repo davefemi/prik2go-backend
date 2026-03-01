@@ -2,26 +2,26 @@ package nl.davefemi.prik2go;
 
 import static org.junit.Assert.*;
 
+import nl.davefemi.prik2go.domain.Customer;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
-import nl.davefemi.prik2go.domain.Klant;
 import nl.davefemi.prik2go.exceptions.ApplicatieException;
 
 /**
  * Testklasse voor klasse Klant
  */
 @SpringBootTest
-public class KlantTest  {
-        private Klant klant1;
-        private Klant klant2;
+public class CustomerTest  {
+        private Customer klant1;
+        private Customer klant2;
         
         @BeforeEach
         public void setUp() throws ApplicatieException {
 
-                klant1 = new Klant(20);
-                klant2 = new Klant(30);
+                klant1 = new Customer(20);
+                klant2 = new Customer(30);
         }
         
         @AfterEach

@@ -4,7 +4,6 @@ import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import nl.davefemi.prik2go.data.dto.domain.BranchDTO;
-import nl.davefemi.prik2go.data.entity.domain.BranchEntity;
 import nl.davefemi.prik2go.data.mapper.domain.BranchMapper;
 import nl.davefemi.prik2go.data.repository.domain.BranchRepository;
 import nl.davefemi.prik2go.domain.Branch;
@@ -32,11 +31,10 @@ public class DomainService {
      */
     @PostConstruct
     private void init() {
-        for (BranchEntity b :branchRepository.findAll()){
-            Branch branch = branchMapper.mapEntityToDomain(b);
-            branches.put(branch.getLocation(), branch);
-            log.info(branch.getInitialCustomers().size()+ " Customers for [{}] have been retrieved", branch.getLocation());
-        }
+        branchRepository.findAll().forEach(b ->
+                branches.put(b.getName(), branchMapper.mapEntityToDomain(b)));
+        branches.forEach((n, b) ->
+                log.info(b.getInitialCustomers().size()+ " Customers for [{}] have been retrieved", n));
     }
 
     /**
@@ -94,11 +92,11 @@ public class DomainService {
             throw new VestigingException("Branch does not exist");
         }
         if(branches.get(location).isOpen()) {
-            AtomicInteger aantalVestigingenOpen = new AtomicInteger();
+            AtomicInteger amountOfOpenBranches = new AtomicInteger();
             branches.values().forEach(b -> {if(b.isOpen()){
-                aantalVestigingenOpen.getAndIncrement();
+                amountOfOpenBranches.getAndIncrement();
             }});
-            if(aantalVestigingenOpen.get() > 1) {
+            if(amountOfOpenBranches.get() > 1) {
                 closeBranch(location);}
             else {
                 log.warn("Cannot close [{}]. Closing all locations is not allowed", location);
@@ -106,7 +104,7 @@ public class DomainService {
             }
         }
         else {
-            openVestiging(location);
+            openBranch(location);
         }
     }
 
@@ -133,19 +131,21 @@ public class DomainService {
 
     /**
      * Methode om een Vestiging te heropenen en de bijbehorende oorspronkelijke klanten te verwijderen bij
-     * de overige vestigingen, voorzover die daar te vinden zijn. De Vestiging zal zijn eigen oorspronkelijke
+     * de overige vestigingen, voor zover die daar te vinden zijn. De Vestiging zal zijn eigen oorspronkelijke
      * klanten weer instellen als huidige klanten.
      * @param location
      */
-    private void openVestiging(String location) {
+    private void openBranch(String location) {
         Branch branch = branches.get(location);
-        for (Customer c : branch.getInitialCustomers()) {
-            for (Branch b : branches.values()) {
-                if (b.hasCustomer(c) && !b.equals(branch)) {
-                    b.removeCustomer(c);
+        synchronized (this) {
+            for (Customer c : branch.getInitialCustomers()) {
+                for (Branch b : branches.values()) {
+                    if (b.hasCustomer(c) && !b.equals(branch)) {
+                        b.removeCustomer(c);
+                    }
                 }
             }
+            branch.setOpen();
         }
-        branch.setOpen();
     }
 }
