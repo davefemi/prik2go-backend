@@ -8,8 +8,8 @@ import nl.davefemi.prik2go.data.mapper.domain.BranchMapper;
 import nl.davefemi.prik2go.data.repository.domain.BranchRepository;
 import nl.davefemi.prik2go.domain.Branch;
 import nl.davefemi.prik2go.domain.Customer;
-import nl.davefemi.prik2go.exceptions.ApplicatieException;
-import nl.davefemi.prik2go.exceptions.VestigingException;
+import nl.davefemi.prik2go.exceptions.Prik2GoException;
+import nl.davefemi.prik2go.exceptions.BranchException;
 import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +27,7 @@ public class DomainService {
 
     /**
      * Verzorgt de initialisatie van de Vestigings-arraylist.
-     * @throws ApplicatieException
+     * @throws Prik2GoException
      */
     @PostConstruct
     private void init() {
@@ -53,9 +53,9 @@ public class DomainService {
      * terugkeerwaarde van de dto is null, wordt een exceptie opgegooid.
      * @param location van de vestiging
      * @return KlantenDTO met klantgegevens voor de gegeven locatie
-     * @throws ApplicatieException
+     * @throws Prik2GoException
      */
-    public BranchDTO getBranchDTO(String location) throws ApplicatieException {
+    public BranchDTO getBranchDTO(String location) throws Prik2GoException {
         Branch branch;
         if (location != null) {
             branch = branches.get(location);
@@ -63,7 +63,7 @@ public class DomainService {
                 return branchMapper.mapDomainToDTO(branch);
             }
         }
-        throw new ApplicatieException ("Invalid branch");
+        throw new Prik2GoException("Invalid branch");
     }
 
     /**
@@ -72,9 +72,9 @@ public class DomainService {
      * @param location
      * @return boolean
      */
-    public boolean getBranchStatus(String location) throws VestigingException {
+    public boolean getBranchStatus(String location) throws BranchException {
         if (!branches.containsKey(location)){
-            throw new VestigingException("Branch does not exist");
+            throw new BranchException("Branch does not exist");
         }
         return branches.get(location).isOpen();
     }
@@ -83,13 +83,13 @@ public class DomainService {
      * Methode zal aan de hand van de huidige vestigingsstatus kiezen tussen een sluiting
      * of heropening van de gegeven locatie.
      * @param location
-     * @throws ApplicatieException
-     * @throws VestigingException als alle vestigingen status 'gesloten' bereiken wordt deze
+     * @throws Prik2GoException
+     * @throws BranchException als alle vestigingen status 'gesloten' bereiken wordt deze
      * exceptie opgegooid
      */
-    public void changeBranchStatus(String location) throws VestigingException{
+    public void changeBranchStatus(String location) throws BranchException {
         if (!branches.containsKey(location)){
-            throw new VestigingException("Branch does not exist");
+            throw new BranchException("Branch does not exist");
         }
         if(branches.get(location).isOpen()) {
             AtomicInteger amountOfOpenBranches = new AtomicInteger();
@@ -100,7 +100,7 @@ public class DomainService {
                 closeBranch(location);}
             else {
                 log.warn("Cannot close [{}]. Closing all locations is not allowed", location);
-                throw new VestigingException("Er moet minstens 1 vestiging open blijven");
+                throw new BranchException("Er moet minstens 1 vestiging open blijven");
             }
         }
         else {

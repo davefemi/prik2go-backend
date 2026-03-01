@@ -15,7 +15,7 @@ import nl.davefemi.prik2go.data.mapper.identity.UserAccountMapper;
 import nl.davefemi.prik2go.data.mapper.identity.UserSessionMapper;
 import nl.davefemi.prik2go.data.repository.identity.UserAccountRepository;
 import nl.davefemi.prik2go.data.repository.identity.UserSessionRepository;
-import nl.davefemi.prik2go.exceptions.ApplicatieException;
+import nl.davefemi.prik2go.exceptions.Prik2GoException;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
@@ -47,7 +47,7 @@ public class AuthService implements AuthServiceInterface {
     }
 
     @Override
-    public SessionResponseDTO changePassword(UserAccountDTO credentials) throws ApplicatieException, IllegalArgumentException {
+    public SessionResponseDTO changePassword(UserAccountDTO credentials) throws Prik2GoException, IllegalArgumentException {
         UserAccountEntity entity = userAccountRepository.findByUserid(credentials.getUser());
         if (entity != null) {
             if (!passwordManager.match(credentials.getPassword(), entity.getPassword())){
@@ -60,7 +60,7 @@ public class AuthService implements AuthServiceInterface {
                 userAccountRepository.save(entity);
                 return createSession(userAccountMapper.mapToDTO(entity));
         }
-        throw new ApplicatieException("Unable to change password");
+        throw new Prik2GoException("Unable to change password");
     }
 
     /*

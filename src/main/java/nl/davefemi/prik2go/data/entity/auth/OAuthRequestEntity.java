@@ -12,6 +12,7 @@ import java.util.UUID;
 @Table(name = "oauth_request")
 public class OAuthRequestEntity {
     @Id
+    @Column(name = "request_id")
     private UUID requestId;
 
     @Column(name = "secret")

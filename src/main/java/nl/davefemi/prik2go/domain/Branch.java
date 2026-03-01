@@ -21,6 +21,22 @@ public class Branch implements Comparable<Branch>{
         return location;
     }
 
+    public synchronized List<Customer> getInitialCustomers(){
+        List<Customer> customers = new ArrayList<>();
+        initialCustomers.forEach(customers::add);
+        return customers;
+    }
+
+    public synchronized List<Customer> getCurrentCustomers(){
+        List<Customer> customers = new ArrayList<>();
+        currentCustomers.forEach(customers::add);
+        return customers;
+    }
+
+    public synchronized boolean hasCustomer(Customer c) {
+        return currentCustomers.contains(c);
+    }
+
     public synchronized void addCustomer(Customer customer) {
         if (currentCustomers != null ) {
             currentCustomers.add(customer);
@@ -38,24 +54,13 @@ public class Branch implements Comparable<Branch>{
         }
     }
 
-    public synchronized List<Customer> getCurrentCustomers(){
-        List<Customer> customers = new ArrayList<>();
-        currentCustomers.forEach(customers::add);
-        return customers;
-    }
-
-    public synchronized boolean hasCustomer(Customer c) {
-        return currentCustomers.contains(c);
-    }
-
     /**
-     * Keert een lijst met oorspronkelijke Klant objecten terug
-     * @return List<Klant> oorspronkelijke klanten
+     * Keert de status van de Vestiging terug als boolean. De waarde true betekent dat
+     * de vestiging open is. De waarde false betekent dat de vestiging gesloten is.
+     * @return true of false
      */
-    public synchronized List<Customer> getInitialCustomers(){
-        List<Customer> customers = new ArrayList<>();
-        initialCustomers.forEach(customers::add);
-        return customers;
+    public synchronized boolean isOpen() {
+        return open;
     }
 
     /**
@@ -79,22 +84,12 @@ public class Branch implements Comparable<Branch>{
     public synchronized void setClosed() {
         if (open) {
             open = false;
-            log.info("Vestiging [" + location + "] is gesloten");
+            log.info("Branch [" + location + "] is closed");
             if (currentCustomers!= null) {
                 currentCustomers.clear();
             }
         }
     }
-
-    /**
-     * Keert de status van de Vestiging terug als boolean. De waarde true betekent dat
-     * de vestiging open is. De waarde false betekent dat de vestiging gesloten is.
-     * @return true of false
-     */
-    public synchronized boolean isOpen() {
-        return open;
-    }
-
 
     /**
      * Levert de locatie en aantal klanten van deze Vestiging als String waarde.

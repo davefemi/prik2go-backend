@@ -5,7 +5,7 @@ import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import nl.davefemi.prik2go.data.dto.auth.RequestDTO;
-import nl.davefemi.prik2go.exceptions.ApplicatieException;
+import nl.davefemi.prik2go.exceptions.Prik2GoException;
 import nl.davefemi.prik2go.exceptions.AuthorizationException;
 import nl.davefemi.prik2go.service.auth.OAuth2Service;
 import org.springframework.http.HttpStatus;
@@ -56,7 +56,7 @@ public class OAuth2Controller {
      */
     @GetMapping("/private/oauth2/request/start")
     public ResponseEntity<?> linkUser(HttpServletRequest req, Principal principal,
-                                      @RequestParam("provider") String provider) throws ApplicatieException {
+                                      @RequestParam("provider") String provider) throws Prik2GoException {
         // TODO check in repository if user is already linked to an OAuth2 account
         return ResponseEntity.of(Optional.of(oAuth2Service.getRequestID(principal.getName(), provider)));
     }
@@ -85,7 +85,7 @@ public class OAuth2Controller {
      * expiration of request and the url leading for authorization.
      */
     @GetMapping("/oauth2/request/start")
-    public ResponseEntity<?> getRequest(@RequestParam("provider") String provider) throws ApplicatieException {
+    public ResponseEntity<?> getRequest(@RequestParam("provider") String provider) throws Prik2GoException {
         return ResponseEntity.of(Optional.of(oAuth2Service.getRequestID(null, provider)));
     }
 
@@ -96,7 +96,7 @@ public class OAuth2Controller {
      * @return true for an authenticated user and false for an unauthenticated user
      */
     @PostMapping("/oauth2/request/polling")
-    public ResponseEntity<?> isAuthenticated(@RequestBody RequestDTO request) throws AuthorizationException, ApplicatieException, TimeoutException {
+    public ResponseEntity<?> isAuthenticated(@RequestBody RequestDTO request) throws AuthorizationException, Prik2GoException, TimeoutException {
         boolean result = oAuth2Service.isUserAuthenticated(request);
         if (result)
             return ResponseEntity.status(HttpStatus.OK).body(true);

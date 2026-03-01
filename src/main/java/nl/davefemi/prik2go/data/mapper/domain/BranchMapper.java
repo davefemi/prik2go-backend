@@ -8,7 +8,6 @@ import nl.davefemi.prik2go.data.repository.domain.CustomerRepository;
 import nl.davefemi.prik2go.domain.Branch;
 import nl.davefemi.prik2go.domain.Customer;
 import org.springframework.stereotype.Component;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;

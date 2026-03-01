@@ -1,13 +1,13 @@
 package nl.davefemi.prik2go.exceptions;
 
 @SuppressWarnings("serial")
-public class ApplicatieException extends Exception {
+public class Prik2GoException extends Exception {
 
-        public ApplicatieException() {
+        public Prik2GoException() {
                 super();
         }
 
-        public ApplicatieException(String s) {
+        public Prik2GoException(String s) {
                 super(s);
         }
 }

@@ -7,7 +7,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
-import nl.davefemi.prik2go.exceptions.ApplicatieException;
+import nl.davefemi.prik2go.exceptions.Prik2GoException;
 
 /**
  * Testklasse voor klasse Klant
@@ -18,7 +18,7 @@ public class CustomerTest  {
         private Customer klant2;
         
         @BeforeEach
-        public void setUp() throws ApplicatieException {
+        public void setUp() throws Prik2GoException {
 
                 klant1 = new Customer(20);
                 klant2 = new Customer(30);

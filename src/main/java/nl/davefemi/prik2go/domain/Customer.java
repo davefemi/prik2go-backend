@@ -1,7 +1,5 @@
 package nl.davefemi.prik2go.domain;
 
-import lombok.Data;
-
 import java.util.ArrayList;
 import java.util.List;
 
