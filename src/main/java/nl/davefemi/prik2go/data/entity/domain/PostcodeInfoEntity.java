@@ -16,7 +16,7 @@ public class PostcodeInfoEntity {
     @Column(name = "lng")
     private float lng;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "plaats", referencedColumnName = "naam")
     private LocationEntity location;
 }
