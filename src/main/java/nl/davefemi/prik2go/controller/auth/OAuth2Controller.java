@@ -1,5 +1,6 @@
 package nl.davefemi.prik2go.controller.auth;
 
+import io.swagger.v3.oas.annotations.Hidden;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +18,7 @@ import java.security.Principal;
 import java.util.Optional;
 import java.util.concurrent.TimeoutException;
 
+@Hidden
 @Slf4j
 @RestController
 @RequiredArgsConstructor

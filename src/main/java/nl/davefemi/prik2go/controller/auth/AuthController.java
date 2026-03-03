@@ -1,5 +1,6 @@
 package nl.davefemi.prik2go.controller.auth;
 
+import io.swagger.v3.oas.annotations.Hidden;
 import lombok.RequiredArgsConstructor;
 import nl.davefemi.prik2go.data.dto.identity.UserAccountDTO;
 import nl.davefemi.prik2go.data.dto.identity.SessionResponseDTO;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.logging.Logger;
 
+@Hidden
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/auth")
