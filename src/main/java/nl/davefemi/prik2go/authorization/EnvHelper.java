@@ -14,8 +14,8 @@ public class EnvHelper {
     private String baseUrl;
     private final String oauthLogin = "/oauth2/login?provider=%s";
 
-    @PostConstruct
-    private void init(){
-        System.out.println(baseUrl);
+    public String getLogin(String provider){
+        return baseUrl + String.format(oauthLogin, provider);
     }
+
 }

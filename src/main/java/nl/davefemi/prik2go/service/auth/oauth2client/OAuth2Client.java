@@ -18,6 +18,6 @@ public class OAuth2Client {
     }
 
     public String getClientURL() {
-        return String.format(envHelper.getBaseUrl()+envHelper.getOauthLogin(), getProviderName());
+        return envHelper.getLogin(entity.getName().toLowerCase());
     }
 }
