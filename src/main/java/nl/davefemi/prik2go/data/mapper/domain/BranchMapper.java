@@ -20,7 +20,7 @@ public class BranchMapper {
 
     public Branch mapEntityToDomain(BranchEntity branchEntity){
         List<Customer> customers = new ArrayList<>();
-        for (CustomerEntity customer: customerRepository.getCustomersByBranch(branchEntity)){
+        for (CustomerEntity customer: customerRepository.getCustomersByClosestBranch(branchEntity)){
             Customer c = customerMapper.mapEntityToDomain(customer);
             customers.add(c);
         }
