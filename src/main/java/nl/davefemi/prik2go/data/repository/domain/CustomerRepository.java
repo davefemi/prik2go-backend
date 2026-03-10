@@ -23,6 +23,6 @@ public interface CustomerRepository extends JpaRepository<CustomerEntity, Long> 
             "WHERE           BZ.customer = B.customer " +
             "ORDER BY        SQRT(POWER(KP.lat-VP.lat,2) + POWER(KP.lng-VP.lng,2)) ASC " +
             "LIMIT            1)")
-    List<CustomerEntity> getCustomersByBranch(@Param("branch") BranchEntity branch);
+    List<CustomerEntity> getCustomersByClosestBranch(@Param("branch") BranchEntity branch);
 
 }
