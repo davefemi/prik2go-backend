@@ -16,7 +16,6 @@ import nl.davefemi.prik2go.service.auth.OAuth2Service;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.net.URI;
 import java.security.Principal;
 import java.util.Optional;
